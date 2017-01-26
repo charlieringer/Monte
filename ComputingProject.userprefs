@@ -1,0 +1,13 @@
+﻿<Properties StartupItem="ComputingProject/ComputingProject.csproj">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="ComputingProject/AI.cs">
+    <Files>
+      <File FileName="ComputingProject/AIState.cs" Line="64" Column="35" />
+      <File FileName="ComputingProject/AI.cs" Line="23" Column="42" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
