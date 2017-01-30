@@ -6,25 +6,40 @@ using System.Collections.Generic;
 public abstract class AIState
 {
 	//Tracks Wins
-	private int wins = 0;
+	public int wins { get; set; }
 	//Tracks Losses
-	private int losses = 0;
+	public int losses { get; set; }
 	//Tracks total games played
-	private int totGames = 0;
+	public int totGames { get; set; }
 	//Which player is the current playing in this state
-	private int playerIndex;
+	public int playerIndex { get; set; }
 	//How deep in the tree this is
-	private int depth = 0;
+	public int depth { get; set; }
 	// It's parent
-	private AIState parent;
+	public AIState parent { get; set; }
 	//List of child nodes
-	private List<AIState> children = new List<AIState>();
+	public List<AIState> children { get; set; }
+	//Interger representation of the game state
+	public int[] stateRep { get; set; }
 
 	public AIState(int pIndex, AIState _parent, int _depth)
 	{
 		playerIndex = pIndex;
 		parent = _parent;
 		depth = _depth;
+		stateRep = null;
+		children = new List<AIState> ();
+		wins = losses = totGames = 0;
+	}
+
+	public AIState(int pIndex, AIState _parent, int _depth, int[] _stateRep)
+	{
+		playerIndex = pIndex;
+		parent = _parent;
+		depth = _depth;
+		stateRep = _stateRep;
+		children = new List<AIState> ();
+		wins = losses = totGames = 0;
 	}
 
 	public AIState(int pIndex)
@@ -32,6 +47,19 @@ public abstract class AIState
 		playerIndex = pIndex;
 		parent = null;
 		depth = 0;
+		stateRep = null;
+		children = new List<AIState> ();
+		wins = losses = totGames = 0;
+	}
+
+	public AIState(int pIndex, int[] _stateRep)
+	{
+		playerIndex = pIndex;
+		parent = null;
+		depth = 0;
+		stateRep = _stateRep;
+		children = new List<AIState> ();
+		wins = losses = totGames = 0;
 	}
 
 	//For adding a win
