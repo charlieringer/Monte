@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 
-public class BasicMCTS
+public class MCTSWithLearning
 {
 	double thinkingTime;
 	float exploreWeight;
@@ -12,22 +12,23 @@ public class BasicMCTS
 	int maxRollout;
 	System.Random randGen = new System.Random ();
 	Thread aiThread;
+	Model model;
 
-	public BasicMCTS (double _thinkingTime, float _exploreWeight, int _maxRollout)
+	public MCTSWithLearning (double _thinkingTime, float _exploreWeight, int _maxRollout)
 	{
 		thinkingTime = _thinkingTime;
 		exploreWeight = _exploreWeight;
 		maxRollout = _maxRollout;
 	}
 
-	public BasicMCTS ()
+	public MCTSWithLearning ()
 	{
 		thinkingTime = 5.0;
 		exploreWeight = 1.45f;
 		maxRollout = 32;
 	}
 
-	public BasicMCTS (String fileName)
+	public MCTSWithLearning (String fileName)
 	{
 		//TODO: READ FROM FILE AND REPLACE BELOW VALUES
 		thinkingTime = 5.0;
@@ -143,8 +144,26 @@ public class BasicMCTS
 				rolloutStart.addDraw ();
 				return;
 			}
-			//Get a random child index 
-			int index = randGen.Next(children.Count);
+			float totalScore = 0.0f;
+
+			List<float> scores = new List<float> ();
+			foreach(AIState child in children)
+			{
+				float score = model.evaluate(child.stateRep);
+				totalScore += score;
+				scores.Add (score);
+
+			}
+			double randomPoint = randGen.NextDouble() * totalScore;
+			float runningTotal = 0.0f;
+			int index = 0;
+			for (int i = 0; i < scores.Count; i++) {
+				runningTotal += scores [i];
+				if (runningTotal >= randomPoint) {
+					index = i;
+					break;
+				}
+			}
 			//and see if that node is terminal
 			int endResult = children[index].getWinner ();
 			if(endResult >= 0)

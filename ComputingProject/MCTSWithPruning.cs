@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 
-public class AI
+public class MCTSWithPruning
 {
 	double thinkingTime;
 	float exploreWeight;
@@ -11,12 +12,28 @@ public class AI
 	int maxRollout;
 	System.Random randGen = new System.Random ();
 	Thread aiThread;
+	Model model;
 
-	public AI (double _thinkingTime, float _exploreWeight, int _maxRollout)
+	public MCTSWithPruning (double _thinkingTime, float _exploreWeight, int _maxRollout)
 	{
 		thinkingTime = _thinkingTime;
 		exploreWeight = _exploreWeight;
 		maxRollout = _maxRollout;
+	}
+
+	public MCTSWithPruning ()
+	{
+		thinkingTime = 5.0;
+		exploreWeight = 1.45f;
+		maxRollout = 32;
+	}
+
+	public MCTSWithPruning (String fileName)
+	{
+		//TODO: READ FROM FILE AND REPLACE BELOW VALUES
+		thinkingTime = 5.0;
+		exploreWeight = 1.45f;
+		maxRollout = 32;
 	}
 
 	public void reset()
@@ -30,7 +47,7 @@ public class AI
 	public void runAI(AIState initalState)
 	{
 		//Make a new AI thread with this state
-		aiThread = new Thread (new ThreadStart (() => brain.run(initalState)));
+		aiThread = new Thread (new ThreadStart (() => run(initalState)));
 		//And start it.
 		aiThread.Start ();
 		//Set started to true
@@ -38,7 +55,7 @@ public class AI
 	}
 
 	//Main MCTS algortim
-	public AIState run(AIState initalState)
+	public void run(AIState initalState)
 	{
 		//Make the intial children
 		List<AIState> children = initalState.generateChildren ();
@@ -127,11 +144,29 @@ public class AI
 				rolloutStart.addDraw ();
 				return;
 			}
-			//Get a random child index 
-			int index = randGen.Next(children.Count);
+			float totalScore = 0.0f;
+
+			List<float> scores = new List<float> ();
+			foreach(AIState child in children)
+			{
+				float score = model.evaluate(child.stateRep);
+				totalScore += score;
+				scores.Add (score);
+
+			}
+			double randomPoint = randGen.NextDouble() * totalScore;
+			float runningTotal = 0.0f;
+			int index = 0;
+			for (int i = 0; i < scores.Count; i++) {
+				runningTotal += scores [i];
+				if (runningTotal >= randomPoint) {
+					index = i;
+					break;
+				}
+			}
 			//and see if that node is terminal
-			int endResult = children[index].terminal ();
-			if(endResult > 0)
+			int endResult = children[index].getWinner ();
+			if(endResult >= 0)
 			{
 				terminalStateFound = true;
 				//If it is a win add a win

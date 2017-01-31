@@ -36,6 +36,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AIState.cs" />
     <Compile Include="BasicMCTS.cs" />
+    <Compile Include="Learner.cs" />
+    <Compile Include="MCTSWithPruning.cs" />
+    <Compile Include="MCTSWithLearning.cs" />
+    <Compile Include="Model.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
