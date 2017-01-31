@@ -149,10 +149,11 @@ public class MCTSWithPruning
 			List<float> scores = new List<float> ();
 			foreach(AIState child in children)
 			{
-				float score = model.evaluate(child.stateRep);
-				totalScore += score;
-				scores.Add (score);
-
+				if (child.stateScore == null) {
+					child.stateScore = model.evaluate(child.stateRep);
+				}
+				totalScore += child.stateScore.Value;
+				scores.Add (child.stateScore.Value);
 			}
 			double randomPoint = randGen.NextDouble() * totalScore;
 			float runningTotal = 0.0f;

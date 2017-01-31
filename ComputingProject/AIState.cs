@@ -21,6 +21,8 @@ public abstract class AIState
 	public List<AIState> children { get; set; }
 	//Interger representation of the game state
 	public int[] stateRep { get; set; }
+	//The score which is derived from the learner and represents the score for the state
+	public float? stateScore { get; set; }
 
 	public AIState(int pIndex, AIState _parent, int _depth)
 	{
@@ -30,6 +32,7 @@ public abstract class AIState
 		stateRep = null;
 		children = new List<AIState> ();
 		wins = losses = totGames = 0;
+		stateScore = null;
 	}
 
 	public AIState(int pIndex, AIState _parent, int _depth, int[] _stateRep)
@@ -40,6 +43,7 @@ public abstract class AIState
 		stateRep = _stateRep;
 		children = new List<AIState> ();
 		wins = losses = totGames = 0;
+		stateScore = null;
 	}
 
 	public AIState(int pIndex)
@@ -50,6 +54,7 @@ public abstract class AIState
 		stateRep = null;
 		children = new List<AIState> ();
 		wins = losses = totGames = 0;
+		stateScore = null;
 	}
 
 	public AIState(int pIndex, int[] _stateRep)
@@ -60,6 +65,7 @@ public abstract class AIState
 		stateRep = _stateRep;
 		children = new List<AIState> ();
 		wins = losses = totGames = 0;
+		stateScore = null;
 	}
 
 	//For adding a win
