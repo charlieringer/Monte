@@ -2,60 +2,37 @@
 using System.Collections.Generic;
 using System.Threading;
 
-public class MCTSWithPruning
+public class MCTSWithPruning : MCTSMaster
 {
-	double thinkingTime;
-	float exploreWeight;
-	public bool done;
-	public bool started;
-	public AIState next;
-	int maxRollout;
-	System.Random randGen = new System.Random ();
-	Thread aiThread;
 	Model model;
+	double pruningFactor;
 
-	public MCTSWithPruning (double _thinkingTime, float _exploreWeight, int _maxRollout)
+	public MCTSWithPruning (double _thinkingTime, float _exploreWeight, int _maxRollout, Model _model, double _pruningFactor)
+		: base( _thinkingTime, _exploreWeight, _maxRollout)
 	{
-		thinkingTime = _thinkingTime;
-		exploreWeight = _exploreWeight;
-		maxRollout = _maxRollout;
+		model = _model;
+		pruningFactor = _pruningFactor;
 	}
 
-	public MCTSWithPruning ()
+
+	public MCTSWithPruning (String modelName) : base ()
 	{
-		thinkingTime = 5.0;
-		exploreWeight = 1.45f;
-		maxRollout = 32;
+		//TODO:
+		//Load model from the model file
+		//Load pruning factor from default settings
 	}
 
-	public MCTSWithPruning (String fileName)
+	public MCTSWithPruning (String settingsFile, String modelName) : base (settingsFile)
 	{
-		//TODO: READ FROM FILE AND REPLACE BELOW VALUES
-		thinkingTime = 5.0;
-		exploreWeight = 1.45f;
-		maxRollout = 32;
+		//TODO:
+		//Load model from the model file
+		//Load pruning factor from settings
 	}
 
-	public void reset()
-	{
-		//Resets the flags (for threading purposes)
-		started = false;
-		done = false;
-		next = null;
-	}
 
-	public void runAI(AIState initalState)
-	{
-		//Make a new AI thread with this state
-		aiThread = new Thread (new ThreadStart (() => run(initalState)));
-		//And start it.
-		aiThread.Start ();
-		//Set started to true
-		started = true;
-	}
 
 	//Main MCTS algortim
-	public void run(AIState initalState)
+	public override void run(AIState initalState)
 	{
 		//Make the intial children
 		List<AIState> children = initalState.generateChildren ();
@@ -127,7 +104,7 @@ public class MCTSWithPruning
 	}
 
 	//Rollout function (plays random moves till it hits a termination)
-	void rollout(AIState rolloutStart)
+	private override void rollout(AIState rolloutStart)
 	{
 		bool terminalStateFound = false;
 		//Get the children

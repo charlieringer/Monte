@@ -7,7 +7,10 @@ public class Learner
 	Model currentModel;
 	int maxIters = 128;
 	int lengthOfInput;
-	System.Random randGen = new System.Random ();
+
+	public delegate AIState StateCreator();
+
+	private System.Random randGen = new System.Random ();
 
 	public Learner (int _lengthOfInput)
 	{
@@ -27,16 +30,16 @@ public class Learner
 		lengthOfInput = currentModel.w2.Length;
 	}
 
-	public Model train(int numbItters, int episodes)
+	public Model train(int numbItters, int episodes, StateCreator sc)
 	{
 		for(int i = 0; i < episodes; i++)
 		{
-			trainingEpisode(numbItters);
+			trainingEpisode(sc, numbItters);
 		}
 		return currentModel;
 	}
 
-	private void trainingEpisode(int numbItters)
+	private void trainingEpisode(StateCreator sc, int numbItters)
 	{
 		List<int[]> totalInputs = new List<int[]>();
 		List<float[]> totalHiddenLayers = new List<float[]>();
@@ -45,15 +48,15 @@ public class Learner
 
 		for(int i = 0; i < numbItters; i++)
 		{
-			AIState initalState = generateStartState();
-			playForward(initalState, totalInputs, totalHiddenLayers, totalResults, totalRewards);
+			playForward(sc, totalInputs, totalHiddenLayers, totalResults, totalRewards);
 		}
 		//TODO: BACKPROPIGATE AND DO ALL THAT HARD STUFF
 	} 
 
-	private void playForward(AIState initalState, List<int[]> inputs, List<float[]> hiddenLayers, List<float> results, List<float> rewards)
+	private void playForward(StateCreator stateCreator, List<int[]> inputs, List<float[]> hiddenLayers, List<float> results, List<float> rewards)
 	{
-		AIState currentState = initalState;
+		
+		AIState currentState = stateCreator();
 		int count = 0;
 		while(currentState.getWinner() < 0)
 		{
@@ -114,12 +117,6 @@ public class Learner
 			hiddenLayers.Add (hiddenLayer);
 			currentState = currentState.parent;
 		}
-	}
-
-	AIState generateStartState()
-	{
-		//TODO: Figure out how to get a start state from the user
-		return null;
 	}
 }
 
