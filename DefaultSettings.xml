@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<MCTSSettings ThinkingTime="5.0" ExploreWeight="1.45" MaxRollout="32"></MCTSSettings>
-<PruningSettings pruneWorsePercent="0.2"></PruningSettings>
+<MCTSSettings ThinkingTime="5.0" ExploreWeight="1.45" MaxRollout="64"></MCTSSettings>
+<PruningSettings PruneWorsePercent="0.2"></PruningSettings>

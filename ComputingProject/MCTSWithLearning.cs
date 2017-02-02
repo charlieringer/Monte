@@ -5,7 +5,7 @@ using System.Xml;
 
 public class MCTSWithLearning : MCTSMaster
 {
-	Model model;
+	private Model model;
 
 	public MCTSWithLearning (double _thinkingTime, float _exploreWeight, int _maxRollout, Model _model): base(_thinkingTime, _exploreWeight, _maxRollout)
 	{ 
@@ -24,7 +24,7 @@ public class MCTSWithLearning : MCTSMaster
 		
 
 	//Main MCTS algortim
-	public override void run(AIState initalState)
+	protected override void mainAlgorithm(AIState initalState)
 	{
 		//Make the intial children
 		List<AIState> children = initalState.generateChildren ();
@@ -96,7 +96,7 @@ public class MCTSWithLearning : MCTSMaster
 	}
 
 	//Rollout function (plays random moves till it hits a termination)
-	private override void rollout(AIState rolloutStart)
+	protected override void rollout(AIState rolloutStart)
 	{
 		bool terminalStateFound = false;
 		//Get the children
@@ -119,7 +119,7 @@ public class MCTSWithLearning : MCTSMaster
 			foreach(AIState child in children)
 			{
 				if (child.stateScore == null) {
-					child.stateScore = model.evaluate(child.stateRep);
+					child.stateScore = model.evaluate(child.stateRep, child.playerIndex);
 				}
 				totalScore += child.stateScore.Value;
 				scores.Add (child.stateScore.Value);

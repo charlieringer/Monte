@@ -37,11 +37,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AIState.cs" />
     <Compile Include="BasicMCTS.cs" />
-    <Compile Include="Learner.cs" />
     <Compile Include="MCTSWithPruning.cs" />
     <Compile Include="MCTSWithLearning.cs" />
     <Compile Include="Model.cs" />
     <Compile Include="MCTSMaster.cs" />
+    <Compile Include="FitnessBased.cs" />
+    <Compile Include="DLModel.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

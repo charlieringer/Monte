@@ -15,20 +15,14 @@ public class DLModel
 
 	public DLModel (int _lengthOfInput)
 	{
+		float[] w1 = new float[_lengthOfInput * _lengthOfInput];
+		float[] w2 = new float[_lengthOfInput * 2];
 		lengthOfInput = _lengthOfInput;
-		currentModel = new Model (lengthOfInput);
-	}
-
-	public DLModel (Model model)
-	{
-		currentModel = model;
-		lengthOfInput = model.w2.Length;
 	}
 
 	public DLModel (string modelfile)
 	{
-		currentModel = new Model(modelfile);
-		lengthOfInput = currentModel.w2.Length;
+		//TODO:Read model from file
 	}
 
 	public void train(int numbItters, int episodes, StateCreator sc)
@@ -52,22 +46,17 @@ public class DLModel
 			playForward(sc, totalInputs, totalHiddenLayers, totalResults, totalRewards);
 		}
 		//TODO: BACKPROPIGATE AND DO ALL THAT HARD STUFF
-		float[] newW1 = new float[currentModel.w1.Length];
-		for(int i = 0; i < newW1; i++)
+		float[] newW1 = new float[w1.Length];
+		for(int i = 0; i < newW1.Length; i++)
 			newW1[i] = w1[i];
 
-		float[] newW2 = new float[currentModel.w2.Length];
-		for(int i = 0; i < newW2; i++)
+		float[] newW2 = new float[w2.Length];
+		for(int i = 0; i < newW2.Length; i++)
 			newW1[i] = w2[i];
 
 		Model updatedModel = new Model(newW1, newW2);
 
 
-		for( int i = 0; i < updatedModel.w2; i++)
-		{
-			float thisWeight = 
-
-		}
 
 		/*
 		for i in range(0, len(w2)):
@@ -149,7 +138,7 @@ public class DLModel
 			//TODO: Correctly Calculate Reward. 
 			int reward = 0;
 			rewards.Add(reward);
-			float[] hiddenLayer = getHiddenLayer(currentState);
+			float[] hiddenLayer = getHiddenLayer(currentState.stateRep);
 			hiddenLayers.Add (hiddenLayer);
 			currentState = currentState.parent;
 		}

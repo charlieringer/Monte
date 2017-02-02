@@ -4,8 +4,8 @@ using System.Threading;
 
 public class MCTSWithPruning : MCTSMaster
 {
-	Model model;
-	double pruningFactor;
+	private Model model;
+	private double pruningFactor;
 
 	public MCTSWithPruning (double _thinkingTime, float _exploreWeight, int _maxRollout, Model _model, double _pruningFactor)
 		: base( _thinkingTime, _exploreWeight, _maxRollout)
@@ -32,8 +32,12 @@ public class MCTSWithPruning : MCTSMaster
 
 
 	//Main MCTS algortim
-	public override void run(AIState initalState)
+	protected override void mainAlgorithm(AIState initalState)
 	{
+		/* TODO: Prune the tree
+		 * Probably going to influence this pruning based on the paper by Nick.
+		 * Will use the score from the learn model + a threshold param */
+
 		//Make the intial children
 		List<AIState> children = initalState.generateChildren ();
 		//Get the start time
@@ -104,7 +108,7 @@ public class MCTSWithPruning : MCTSMaster
 	}
 
 	//Rollout function (plays random moves till it hits a termination)
-	private override void rollout(AIState rolloutStart)
+	protected override void rollout(AIState rolloutStart)
 	{
 		bool terminalStateFound = false;
 		//Get the children
@@ -127,7 +131,7 @@ public class MCTSWithPruning : MCTSMaster
 			foreach(AIState child in children)
 			{
 				if (child.stateScore == null) {
-					child.stateScore = model.evaluate(child.stateRep);
+					child.stateScore = model.evaluate(child.stateRep, child.playerIndex);
 				}
 				totalScore += child.stateScore.Value;
 				scores.Add (child.stateScore.Value);

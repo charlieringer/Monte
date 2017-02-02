@@ -8,7 +8,7 @@ public class BasicMCTS : MCTSMaster
 	public BasicMCTS (double _thinkingTime, float _exploreWeight, int _maxRollout) : base(_thinkingTime, _exploreWeight, _maxRollout){}
 
 	//Main MCTS algortim
-	public override void run(AIState initalState)
+	protected override void mainAlgorithm(AIState initalState)
 	{
 		//Make the intial children
 		List<AIState> children = initalState.generateChildren ();
@@ -80,7 +80,7 @@ public class BasicMCTS : MCTSMaster
 	}
 
 	//Rollout function (plays random moves till it hits a termination)
-	private override void rollout(AIState rolloutStart)
+	protected override void rollout(AIState rolloutStart)
 	{
 		bool terminalStateFound = false;
 		//Get the children
