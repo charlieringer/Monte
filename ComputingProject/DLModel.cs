@@ -15,9 +15,16 @@ public class DLModel
 
 	public DLModel (int _lengthOfInput)
 	{
-		float[] w1 = new float[_lengthOfInput * _lengthOfInput];
-		float[] w2 = new float[_lengthOfInput * 2];
+		w1 = new float[_lengthOfInput * _lengthOfInput];
+		w2 = new float[_lengthOfInput * 2];
 		lengthOfInput = _lengthOfInput;
+	}
+
+	public DLModel (float[] _w1, float[] _w2)
+	{
+		w1 = _w1;
+		w2 = _w2;
+		lengthOfInput = w2.Length/2;
 	}
 
 	public DLModel (string modelfile)
@@ -26,6 +33,13 @@ public class DLModel
 	}
 
 	public void train(int numbItters, int episodes, StateCreator sc)
+	{
+		//TODO: Work out the default file name
+		string defaultFileName = "";
+		train (numbItters, episodes, sc, defaultFileName);
+	}
+
+	public void train(int numbItters, int episodes, StateCreator sc, string outputFile)
 	{
 		for(int i = 0; i < episodes; i++)
 		{
@@ -54,7 +68,7 @@ public class DLModel
 		for(int i = 0; i < newW2.Length; i++)
 			newW1[i] = w2[i];
 
-		Model updatedModel = new Model(newW1, newW2);
+		DLModel updatedModel = new DLModel(newW1, newW2);
 
 
 

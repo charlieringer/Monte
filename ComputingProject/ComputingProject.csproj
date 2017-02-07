@@ -39,7 +39,6 @@
     <Compile Include="BasicMCTS.cs" />
     <Compile Include="MCTSWithPruning.cs" />
     <Compile Include="MCTSWithLearning.cs" />
-    <Compile Include="Model.cs" />
     <Compile Include="MCTSMaster.cs" />
     <Compile Include="FitnessBased.cs" />
     <Compile Include="DLModel.cs" />

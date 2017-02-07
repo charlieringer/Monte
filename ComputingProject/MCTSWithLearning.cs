@@ -5,21 +5,21 @@ using System.Xml;
 
 public class MCTSWithLearning : MCTSMaster
 {
-	private Model model;
+	private DLModel model;
 
-	public MCTSWithLearning (double _thinkingTime, float _exploreWeight, int _maxRollout, Model _model): base(_thinkingTime, _exploreWeight, _maxRollout)
+	public MCTSWithLearning (double _thinkingTime, float _exploreWeight, int _maxRollout, DLModel _model): base(_thinkingTime, _exploreWeight, _maxRollout)
 	{ 
 		model = _model;
 	}
 
 	public MCTSWithLearning (String modelName) : base ()
 	{
-		//Load model from the model file
+		model = new DLModel (modelName);
 	}
 		
-	public MCTSWithLearning (String settingsFile, String modelName) : base (settingsFile)
+	public MCTSWithLearning (String modelName, String settingsFile) : base (settingsFile)
 	{
-		//Load model from the model file
+		model = new DLModel (modelName);
 	}
 		
 

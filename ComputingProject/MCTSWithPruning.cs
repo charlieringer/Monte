@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Xml;
 
 public class MCTSWithPruning : MCTSMaster
 {
-	private Model model;
+	private DLModel model;
 	private double pruningFactor;
 
-	public MCTSWithPruning (double _thinkingTime, float _exploreWeight, int _maxRollout, Model _model, double _pruningFactor)
+	public MCTSWithPruning (double _thinkingTime, float _exploreWeight, int _maxRollout, DLModel _model, double _pruningFactor)
 		: base( _thinkingTime, _exploreWeight, _maxRollout)
 	{
 		model = _model;
@@ -17,16 +18,23 @@ public class MCTSWithPruning : MCTSMaster
 
 	public MCTSWithPruning (String modelName) : base ()
 	{
-		//TODO:
-		//Load model from the model file
-		//Load pruning factor from default settings
+		model = new DLModel (modelName);
+		XmlDocument settings = new XmlDocument ();
+		settings.Load("DefaultSettings.xml"); 
+
+		XmlNode node = settings.SelectSingleNode("PruningSettings");
+		pruningFactor = Double.Parse(node.Attributes.GetNamedItem("PruneWorsePercent").Value);
+
 	}
 
-	public MCTSWithPruning (String settingsFile, String modelName) : base (settingsFile)
+	public MCTSWithPruning (String modelName, String settingsFile) : base (settingsFile)
 	{
-		//TODO:
-		//Load model from the model file
-		//Load pruning factor from settings
+		model = new DLModel (modelName);
+		XmlDocument settings = new XmlDocument ();
+		settings.Load("settingsFile"); 
+
+		XmlNode node = settings.SelectSingleNode("PruningSettings");
+		pruningFactor = Double.Parse(node.Attributes.GetNamedItem("PruneWorsePercent").Value);
 	}
 
 
