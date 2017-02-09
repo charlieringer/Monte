@@ -48,6 +48,8 @@ public class MCTSWithPruning : MCTSMaster
 
 		//Make the intial children
 		List<AIState> children = initalState.generateChildren ();
+		children = prune (children);
+
 		//Get the start time
 		double startTime = (DateTime.Now.Ticks)/10000000;
 		double latestTick = startTime;
@@ -62,6 +64,9 @@ public class MCTSWithPruning : MCTSMaster
 			//And loop through it's child
 			while(bestNode.children.Count > 0)
 			{
+				//Prune the children
+				bestNode.children =  prune(bestNode.children);
+
 				//Set the scores as a base line
 				bestScore = -1;
 				bestIndex = -1;
@@ -139,7 +144,7 @@ public class MCTSWithPruning : MCTSMaster
 			foreach(AIState child in children)
 			{
 				if (child.stateScore == null) {
-					child.stateScore = model.evaluate(child.stateRep, child.playerIndex);
+					child.stateScore = model.evaluate(child.stateRep);
 				}
 				totalScore += child.stateScore.Value;
 				scores.Add (child.stateScore.Value);
@@ -176,6 +181,90 @@ public class MCTSWithPruning : MCTSMaster
 		{
 			child.children = new List<AIState>();
 		}
+	}
+
+	List<AIState> quickSort(List<AIState> startList)
+	{
+		if (startList.Count == 0) {
+			return null;
+		}
+		foreach(AIState state in startList)
+			state.stateScore = model.evaluate(state.stateRep);
+		AIState pivot = startList [0];
+
+		List<AIState> left = null;
+		List<AIState> right = null;
+		List<AIState> returnList = new List<AIState>();
+		returnList.AddRange (left);
+		returnList.Add (pivot);
+		returnList.AddRange (right);
+		return returnList;
+	}
+
+	private List<AIState> prune(List<AIState> list)
+	{
+		//Sort the list
+		foreach(AIState node in list)
+			node.stateScore = model.evaluate(node.stateRep);
+		list = mergeSort(list);
+
+		int numbNodesToRemove = (int)(list.Count * pruningFactor);
+		list.RemoveRange(0, numbNodesToRemove);
+		return list;
+
+
+	}
+
+	private static List<AIState> mergeSort(List<AIState> startList)
+	{
+		if (startList.Count <= 1)
+		{
+			return startList;
+		}
+
+		int pivot = startList.Count / 2;
+		List<AIState> left = new List<AIState>();
+		List<AIState> right = new List<AIState>();
+
+		for (int i = 0; i < pivot; i++)
+			left.Add(startList[i]);
+
+		for (int i = pivot; i < startList.Count; i++)
+			right.Add(startList[i]);
+
+		left = mergeSort(left); 
+		right = mergeSort(right);
+
+		return merge(left, right);
+	}
+
+	private static List<AIState> merge(List<AIState> left, List<AIState> right)
+	{
+		List<AIState> returnList = new List<AIState>();
+		while (left.Count > 0 && right.Count > 0 )
+		{
+			if (left[0].stateScore < right[0].stateScore)
+			{
+				returnList.Add(left[0]);
+				left.RemoveAt(0);
+			}
+			else
+			{
+				returnList.Add(right[0]);
+				right.RemoveAt(0);
+			}
+		}
+		if (left.Count > 0) {
+			foreach(AIState state in left)
+				returnList.Add(state);
+		}
+		for (int i = 0; i < left.Count; i++) {
+			returnList.Add (left [i]);  
+		}			
+		for (int i = 0; i < right.Count; i++) {
+			returnList.Add (right [i]); 
+		}
+		return returnList;
 	}
 }
 

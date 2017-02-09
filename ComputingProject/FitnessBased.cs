@@ -11,16 +11,16 @@ public class FitnessBasedAI
 	public bool done;
 	public bool started;
 	public AIState next;
-	Model model;
+	DLModel model;
 
-	public FitnessBasedAI (Model _model)
+	public FitnessBasedAI(DLModel _model)
 	{
 		model = _model;
 	}
 
 	public FitnessBasedAI (string modelfile)
 	{
-		model = new Model(modelfile);
+		model = new DLModel(modelfile);
 	}
 
 	public void run(AIState initalState)
@@ -47,7 +47,7 @@ public class FitnessBasedAI
 		float? bestScore = null;
 		foreach(AIState child in children)
 		{
-			child.stateScore = model.evaluate(child.stateRep, child.playerIndex);
+			child.stateScore = model.evaluate(child.stateRep);
 			if (bestScore == null ||child.stateScore > bestScore) {
 				best = child;
 				bestScore = child.stateScore;
