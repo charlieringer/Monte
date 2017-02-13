@@ -1,9 +1,11 @@
 ﻿<Properties StartupItem="ComputingProject/ComputingProject.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="ComputingProject/AI.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="ComputingProject/AIState.cs">
     <Files>
-      <File FileName="ComputingProject/AIState.cs" Line="64" Column="35" />
-      <File FileName="ComputingProject/AI.cs" Line="23" Column="42" />
+      <File FileName="ComputingProject/AIState.cs" Line="12" Column="1" />
+      <File FileName="ComputingProject/DLModel.cs" Line="11" Column="21" />
+      <File FileName="ComputingProject/BasicMCTS.cs" Line="1" Column="1" />
+      <File FileName="ComputingProject/MCTSMaster.cs" Line="27" Column="33" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

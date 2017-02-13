@@ -37,15 +37,9 @@ public class MCTSWithPruning : MCTSMaster
 		pruningFactor = Double.Parse(node.Attributes.GetNamedItem("PruneWorsePercent").Value);
 	}
 
-
-
 	//Main MCTS algortim
 	protected override void mainAlgorithm(AIState initalState)
 	{
-		/* TODO: Prune the tree
-		 * Probably going to influence this pruning based on the paper by Nick.
-		 * Will use the score from the learn model + a threshold param */
-
 		//Make the intial children
 		List<AIState> children = initalState.generateChildren ();
 		children = prune (children);
@@ -144,7 +138,7 @@ public class MCTSWithPruning : MCTSMaster
 			foreach(AIState child in children)
 			{
 				if (child.stateScore == null) {
-					child.stateScore = model.evaluate(child.stateRep);
+					child.stateScore = model.evaluate(child.stateRep, child.playerIndex);
 				}
 				totalScore += child.stateScore.Value;
 				scores.Add (child.stateScore.Value);
@@ -189,7 +183,7 @@ public class MCTSWithPruning : MCTSMaster
 			return null;
 		}
 		foreach(AIState state in startList)
-			state.stateScore = model.evaluate(state.stateRep);
+			state.stateScore = model.evaluate(state.stateRep, state.playerIndex);
 		AIState pivot = startList [0];
 
 		List<AIState> left = null;
@@ -204,8 +198,8 @@ public class MCTSWithPruning : MCTSMaster
 	private List<AIState> prune(List<AIState> list)
 	{
 		//Sort the list
-		foreach(AIState node in list)
-			node.stateScore = model.evaluate(node.stateRep);
+		foreach(AIState state in list)
+			state.stateScore = model.evaluate(state.stateRep, state.playerIndex);
 		list = mergeSort(list);
 
 		int numbNodesToRemove = (int)(list.Count * pruningFactor);

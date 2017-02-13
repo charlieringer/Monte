@@ -2,14 +2,12 @@
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.Workbench ActiveDocument="DLModel.cs">
     <Files>
-      <File FileName="DLModel.cs" Line="160" Column="42" />
-      <File FileName="Model.cs" Line="36" Column="44" />
-      <File FileName="BasicMCTS.cs" Line="11" Column="39" />
-      <File FileName="MCTSWithLearning.cs" Line="122" Column="62" />
-      <File FileName="MCTSWithPruning.cs" Line="136" Column="42" />
-      <File FileName="MCTSMaster.cs" Line="30" Column="20" />
+      <File FileName="DLModel.cs" Line="9" Column="20" />
+      <File FileName="MCTSWithPruning.cs" Line="202" Column="42" />
       <File FileName="FitnessBased.cs" Line="50" Column="71" />
-      <File FileName="AIState.cs" Line="15" Column="24" />
+      <File FileName="AIState.cs" Line="25" Column="32" />
+      <File FileName="MCTSMaster.cs" Line="50" Column="50" />
+      <File FileName="MCTSWithLearning.cs" Line="122" Column="73" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

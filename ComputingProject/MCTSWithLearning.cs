@@ -119,7 +119,7 @@ public class MCTSWithLearning : MCTSMaster
 			foreach(AIState child in children)
 			{
 				if (child.stateScore == null) {
-					child.stateScore = model.evaluate(child.stateRep);
+					child.stateScore = model.evaluate(child.stateRep, child.playerIndex);
 				}
 				totalScore += child.stateScore.Value;
 				scores.Add (child.stateScore.Value);

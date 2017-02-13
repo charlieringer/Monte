@@ -47,7 +47,7 @@ public class FitnessBasedAI
 		float? bestScore = null;
 		foreach(AIState child in children)
 		{
-			child.stateScore = model.evaluate(child.stateRep);
+			child.stateScore = model.evaluate(child.stateRep, child.playerIndex);
 			if (bestScore == null ||child.stateScore > bestScore) {
 				best = child;
 				bestScore = child.stateScore;
