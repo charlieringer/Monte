@@ -1,8 +1,14 @@
 ﻿<Properties StartupItem="Monte.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="../ComputingProject/AIState.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="MCTSMaster.cs">
     <Files>
-      <File FileName="../ComputingProject/AIState.cs" Line="13" Column="25" />
+      <File FileName="BasicMCTS.cs" Line="1" Column="1" />
+      <File FileName="AIState.cs" Line="1" Column="1" />
+      <File FileName="DLModel.cs" Line="1" Column="1" />
+      <File FileName="FitnessBased.cs" Line="1" Column="1" />
+      <File FileName="MCTSMaster.cs" Line="21" Column="4" />
+      <File FileName="MCTSWithLearning.cs" Line="1" Column="1" />
+      <File FileName="MCTSWithPruning.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
