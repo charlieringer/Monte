@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
-using System.Xml;
 
 namespace Monte
 {
@@ -12,6 +10,7 @@ namespace Monte
 		public BasicMCTS (double _thinkingTime, double _exploreWeight, int _maxRollout) : base(_thinkingTime, _exploreWeight, _maxRollout){}
 
 		//Main MCTS algortim
+	    //TODO: Handle games sttates that can not generate children.
 		protected override void mainAlgorithm(AIState initalState)
 		{
 			//Make the intial children
@@ -20,6 +19,7 @@ namespace Monte
 			double startTime = (DateTime.Now.Ticks)/10000000;
 			double latestTick = startTime;
 			while (latestTick-startTime < thinkingTime) {
+			    //Console.WriteLine("Time elpased: " + (latestTick-startTime));
 				//Update the latest tick
 				latestTick = (DateTime.Now.Ticks)/10000000;
 				//Set the best scores and index
@@ -28,8 +28,16 @@ namespace Monte
 				//Once done set the best child to this
 				AIState bestNode = initalState;
 				//And loop through it's child
+			    int count = 0;
 				while(bestNode.children.Count > 0)
 				{
+				    count++;
+				    if (count > 100)
+				    {
+				        Console.WriteLine("Problem looping through all children.");
+				        break;
+				    }
+
 					//Set the scores as a base line
 					bestScore = -1;
 					bestIndex = -1;
@@ -79,8 +87,15 @@ namespace Monte
 				}
 			}
 			//Return it.
-			next = children[bestMove];
-			done = true;
+		    if (children.Count == 0)
+		    {
+		        Console.WriteLine("SERIOUS ERROR OCCURED: No children ");
+		    }
+		    else
+		    {
+		        next = children[bestMove];
+		    }
+		    done = true;
 		}
 
 		//Rollout function (plays random moves till it hits a termination)
@@ -90,18 +105,24 @@ namespace Monte
 			//Get the children
 			List<AIState> children = rolloutStart.generateChildren();
 
-			int count = 0;
+			int loopCount = 0;
 			while(!terminalStateFound)
 			{
 				//Loop through till a terminal state is found
-				count++;
-				if (count >= maxRollout) {
+			    loopCount++;
+				if (loopCount >= maxRollout) {
 					//or maxroll out is hit
-
+                    //Console.WriteLine("ERROR: Could not find a terminal state.");
 					rolloutStart.addDraw ();
 					return;
 				}
-				//Get a random child index 
+			    if (children.Count == 0)
+			    {
+			        //Console.WriteLine("ERROR: No childern.");
+			        rolloutStart.addDraw ();
+			        return;
+			    }
+				//Get a random child index
 				int index = randGen.Next(children.Count);
 				//and see if that node is terminal
 				int endResult = children[index].getWinner ();
@@ -128,6 +149,3 @@ namespace Monte
 		}
 	}
 }
-
-
-

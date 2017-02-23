@@ -141,13 +141,13 @@ namespace Monte
 				foreach(AIState child in children)
 				{
 					if (child.stateScore == null) {
-						child.stateScore = model.evaluate(child.stateRep, child.playerIndex);
+						child.stateScore = (float)model.evaluate(child.stateRep, child.playerIndex);
 					}
 					totalScore += child.stateScore.Value;
 					scores.Add (child.stateScore.Value);
 				}
 				double randomPoint = randGen.NextDouble() * totalScore;
-				float runningTotal = 0.0f;
+				double runningTotal = 0.0f;
 				int index = 0;
 				for (int i = 0; i < scores.Count; i++) {
 					runningTotal += scores [i];
@@ -186,7 +186,7 @@ namespace Monte
 				return null;
 			}
 			foreach(AIState state in startList)
-				state.stateScore = model.evaluate(state.stateRep, state.playerIndex);
+				state.stateScore = (float)model.evaluate(state.stateRep, state.playerIndex);
 			AIState pivot = startList [0];
 
 			List<AIState> left = null;
@@ -202,7 +202,7 @@ namespace Monte
 		{
 			//Sort the list
 			foreach(AIState state in list)
-				state.stateScore = model.evaluate(state.stateRep, state.playerIndex);
+				state.stateScore = (float)model.evaluate(state.stateRep, state.playerIndex);
 			list = mergeSort(list);
 
 			int numbNodesToRemove = (int)(list.Count * pruningFactor);

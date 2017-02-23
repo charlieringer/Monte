@@ -98,6 +98,5 @@ namespace Monte
 		public abstract List<AIState> generateChildren ();
 		//For checking is a node is terminal (and which player won)ss
 		public abstract int getWinner ();
-
 	}
 }

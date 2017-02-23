@@ -103,6 +103,10 @@ namespace Monte
 			bool terminalStateFound = false;
 			//Get the children
 			List<AIState> children = rolloutStart.generateChildren();
+		    if (children.Count == 0) {
+		        //Should never happen but it could.
+		        return;
+		    }
 
 			int count = 0;
 			while(!terminalStateFound)
@@ -121,7 +125,7 @@ namespace Monte
 				foreach(AIState child in children)
 				{
 					if (child.stateScore == null) {
-						child.stateScore = model.evaluate(child.stateRep, child.playerIndex);
+						child.stateScore = (float)model.evaluate(child.stateRep, child.playerIndex);
 					}
 					totalScore += child.stateScore.Value;
 					scores.Add (child.stateScore.Value);

@@ -10,7 +10,7 @@ namespace Monte
 		protected double thinkingTime;
 		protected double exploreWeight;
 		protected int maxRollout;
-		protected System.Random randGen = new System.Random ();
+		protected System.Random randGen = new System.Random (1);
 		protected Thread aiThread;
 
 		public bool done;
@@ -71,6 +71,7 @@ namespace Monte
 			started = false;
 			done = false;
 			next = null;
+		    aiThread.Join();
 		}
 
 		public void run(AIState initalState)

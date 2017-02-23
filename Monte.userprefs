@@ -1,13 +1,13 @@
 ﻿<Properties StartupItem="Monte.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="MCTSMaster.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="MCTSWithLearning.cs">
     <Files>
       <File FileName="BasicMCTS.cs" Line="1" Column="1" />
       <File FileName="AIState.cs" Line="1" Column="1" />
       <File FileName="DLModel.cs" Line="1" Column="1" />
       <File FileName="FitnessBased.cs" Line="1" Column="1" />
-      <File FileName="MCTSMaster.cs" Line="21" Column="4" />
-      <File FileName="MCTSWithLearning.cs" Line="1" Column="1" />
+      <File FileName="MCTSMaster.cs" Line="1" Column="1" />
+      <File FileName="MCTSWithLearning.cs" Line="4" Column="18" />
       <File FileName="MCTSWithPruning.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
