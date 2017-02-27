@@ -14,7 +14,7 @@ namespace Monte
 		protected override void mainAlgorithm(AIState initalState)
 		{
 			//Make the intial children
-			List<AIState> children = initalState.generateChildren ();
+			initalState.generateChildren ();
 			//Get the start time
 			double startTime = (DateTime.Now.Ticks)/10000000;
 			double latestTick = startTime;
@@ -22,9 +22,7 @@ namespace Monte
 			    //Console.WriteLine("Time elpased: " + (latestTick-startTime));
 				//Update the latest tick
 				latestTick = (DateTime.Now.Ticks)/10000000;
-				//Set the best scores and index
-				double bestScore = -1;
-				int bestIndex = -1;
+
 				//Once done set the best child to this
 				AIState bestNode = initalState;
 				//And loop through it's child
@@ -39,18 +37,14 @@ namespace Monte
 				    }
 
 					//Set the scores as a base line
-					bestScore = -1;
-					bestIndex = -1;
+				    double bestScore = -1;
+					int bestIndex = -1;
 
 					for(int i = 0; i < bestNode.children.Count; i++){
 						//Scores as per the previous part
 						double wins = bestNode.children[i].wins;
 						double games = bestNode.children[i].totGames;
-
-						double score = 1.0;
-						if (games > 0) {
-							score = wins / games;
-						}
+						double score = (games > 0) ? score = wins / games : 1.0;
 
 						//UBT (Upper Confidence Bound 1 applied to trees) function for determining
 						//How much we want to explore vs exploit.
@@ -76,10 +70,10 @@ namespace Monte
 			int mostGames = -1;
 			int bestMove = -1;
 			//Loop through all childern
-			for(int i = 0; i < children.Count; i++)
+			for(int i = 0; i < initalState.children.Count; i++)
 			{
 				//find the one that was played the most (this is the best move)
-				int games = children[i].totGames;
+				int games = initalState.children[i].totGames;
 				if(games >= mostGames)
 				{
 					mostGames = games;
@@ -87,13 +81,13 @@ namespace Monte
 				}
 			}
 			//Return it.
-		    if (children.Count == 0)
+		    if (initalState.children.Count == 0)
 		    {
 		        Console.WriteLine("SERIOUS ERROR OCCURED: No children ");
 		    }
 		    else
 		    {
-		        next = children[bestMove];
+		        next = initalState.children[bestMove];
 		    }
 		    done = true;
 		}

@@ -6,7 +6,6 @@ namespace Monte
 {
 	public class FitnessBasedAI
 	{
-		protected System.Random randGen = new System.Random ();
 		protected Thread aiThread;
 
 		public bool done;

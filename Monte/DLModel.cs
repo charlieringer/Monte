@@ -8,7 +8,9 @@ namespace Monte
 	public class DLModel
 	{
 		int maxIters = 64;
+	    //Vector for the first set of weights (between the input and hidden layer 1)
 		public double[] w1;
+	    //Vector for the second set of weights (between hidden layer 1 and the hidden layer 2).
 		public double[] w2;
 		public int lengthOfInput;
 		private float alpha;
@@ -28,7 +30,7 @@ namespace Monte
 			lengthOfInput = _lengthOfInput;
 
 			XmlDocument settings = new XmlDocument ();
-			settings.Load(settingsFile); 
+			settings.Load(settingsFile);
 
 			XmlNode node = settings.SelectSingleNode("descendant::DeepLearningSettings");
 			//Maybe need XmlNode node = settings.SelectSingleNode("/MCTSSettings");
@@ -56,8 +58,8 @@ namespace Monte
 		    }
 
 			XmlDocument settings = new XmlDocument ();
-			settings.Load(settingsFile); 
-			
+			settings.Load(settingsFile);
+
 			XmlNode root = settings.DocumentElement;
 			XmlNode node = root.SelectSingleNode("descendant::DeepLearningSettings");
 			//Maybe need XmlNode node = settings.SelectSingleNode("/MCTSSettings");
@@ -68,8 +70,8 @@ namespace Monte
 		{
 			for(int i = 0; i < episodes; i++)
 			{
-				trainingEpisode(sc, gamesPerEpisode);
-			    Console.WriteLine("Training Episode " + (i+1) + " of " + episodes +" complete");
+				double totalCost = trainingEpisode(sc, gamesPerEpisode);
+			    Console.WriteLine("Training Episode " + (i+1) + " of " + episodes +" complete. Total cost: " +totalCost);
 			}
 			//TODO:Write model to file
 			DateTime date = DateTime.Now;
@@ -86,8 +88,9 @@ namespace Monte
 		    writer.Close();
 		}
 
-		private void trainingEpisode(StateCreator sc, int numbItters)
+		private double trainingEpisode(StateCreator sc, int numbItters)
 		{
+		    double totalCost = 0.0;
 			List<int[]> totalInputs = new List<int[]>();
 			List<double[]> totalHiddenLayers = new List<double[]>();
 			List<double> totalResults = new List<double>();
@@ -108,17 +111,19 @@ namespace Monte
 
 			/* NOTE: TODO NEED TO ALLOW FOR THE NEW NN METHOD
 			 * Where we have 2 outputs, one for each player
-			 * 
+			 *
 			 * Actually it might be fine, let me think about it somemore.
 			 */
 			for (int i = 0; i < newW2.Length; i++) {
 				double currentWeight = w2 [i];
 				for (int j = 0; j < totalInputs.Count; j++) {
 					double cost = Math.Abs(totalResults [j] - totalRewards [j]);
+				    totalCost += cost;
 					double deltaSigmoid = totalResults [j] * (1 - totalResults [j]);
-					//TODO: Investigate the line below. I think it is wrong. 
-					newW2 [i] = currentWeight - (alpha * cost * deltaSigmoid * totalResults [j]);
+					//TODO: Investigate the line below. I think it is wrong.
+					currentWeight += (alpha * cost * deltaSigmoid * totalResults [j]);
 				}
+			    newW2[i] = currentWeight;
 			}
 			for (int i = 0; i < lengthOfInput; i++) {
 				for (int j = 0; j < lengthOfInput; j++) {
@@ -127,19 +132,20 @@ namespace Monte
 						double cost = Math.Abs (totalHiddenLayers [k] [j] - totalRewards [k]);
 						double hiddenLayerSig = sig (totalHiddenLayers [k] [j]);
 						double deltaSigmoid = hiddenLayerSig * (1 - hiddenLayerSig);
-						//TODO: Investigate the line below. I think it is wrong. 
-						newW1 [i * j] = currentWeight - (alpha * cost * deltaSigmoid * totalInputs [k] [j]);
-
+						//TODO: Investigate the line below. I think it is wrong.
+						currentWeight += (alpha * cost * deltaSigmoid * totalInputs [k] [j]);
 					}
+				    newW1[i * j] = currentWeight;
 				}
 			}
 			w1 = newW1;
 			w2 = newW2;
-		} 
+		    return totalCost;
+		}
 
 		private void playForward(StateCreator stateCreator, List<int[]> inputs, List<double[]> hiddenLayers, List<double> results, List<double> rewards, List<double> playerIndxs)
 		{
-			
+
 			AIState currentState = stateCreator();
 			int count = 0;
 			while(currentState.getWinner() < 0)
@@ -176,9 +182,9 @@ namespace Monte
 				if(endResult >= 0)
 				{
 					if (endResult == currentState.playerIndex)
-						currentState.addWin ();
+						currentState.addLoss (); //NOTE: Just switched these. Probably wrong. Prepare to switch back
 					else
-						currentState.addLoss ();
+						currentState.addWin ();
 					break;
 				} else {
 					//Otherwise select that nodes as the children and continue
@@ -203,7 +209,8 @@ namespace Monte
 		{
 			double[] hiddenLayer = getHiddenLayer(stateBoard);
 			double score = getRawScore(hiddenLayer, pIndex);
-			if (score < 0) score = 0;
+		    if (score < 0) score = 0;
+
 		    double logScore = (float)Math.Log(score);
 			return sig(logScore);
 		}
@@ -218,6 +225,7 @@ namespace Monte
 				{
 					thisElement += stateBoard[i]*w1[i*j];
 				}
+			    sig(thisElement);
 				hiddenLayer[i] = thisElement;
 			}
 			return hiddenLayer;
