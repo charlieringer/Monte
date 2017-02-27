@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<MCTSSettings ThinkingTime="5.0" ExploreWeight="1.45" MaxRollout="64"></MCTSSettings>
-<PruningSettings PruneWorsePercent="0.2"></PruningSettings>
-<DeepLearningSettings Alpha="0.1"></DeepLearningSettings>
