@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Monte
 {
-	public class FitnessBasedAI
+	public class FitnessBasedAI : MCTSMaster
 	{
 		protected Thread aiThread;
 
@@ -23,38 +23,28 @@ namespace Monte
 			model = new DLModel(modelfile);
 		}
 
-		public void run(AIState initalState)
-		{
-			//Make a new AI thread with this state
-			aiThread = new Thread (new ThreadStart (() => mainAlgortim(initalState)));
-			//And start it.
-			aiThread.Start ();
-			//Set started to true
-			started = true;
-		}
 
-		public void reset()
-		{
-			//Resets the flags (for threading purposes)
-			started = false;
-			done = false;
-			next = null;
-		}
-		private void mainAlgortim(AIState initalState)
+
+	    protected override void mainAlgorithm(AIState initalState)
 		{
 			List<AIState> children = initalState.generateChildren();
 			AIState best = null;
 			float? bestScore = null;
+		    float total = 0.0f;
 			foreach(AIState child in children)
 			{
-				child.stateScore = (float)model.evaluate(child.stateRep, child.playerIndex);
+				child.stateScore = (float)model.evaluate(child.stateRep);
+			    total += child.stateScore.Value;
 				if (bestScore == null ||child.stateScore > bestScore) {
 					best = child;
 					bestScore = child.stateScore;
 				}
 			}
+		    Console.WriteLine("Total for this itter: " + total);
 			next = best;
 			done = true;
 		}
+
+	    protected override void rollout(AIState initalState){}
 	}
 }

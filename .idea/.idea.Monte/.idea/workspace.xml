@@ -2,35 +2,17 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7f7df1cd-5037-4b6e-bcfd-b7b0fdd89cc2" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ComputingProject.sln" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ComputingProject.userprefs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ComputingProject/AIState.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ComputingProject/BasicMCTS.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ComputingProject/ComputingProject.csproj" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ComputingProject/ComputingProject.sln" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ComputingProject/ComputingProject.userprefs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ComputingProject/DLModel.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ComputingProject/FitnessBased.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ComputingProject/Learner.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ComputingProject/MCTSMaster.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ComputingProject/MCTSWithLearning.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ComputingProject/MCTSWithPruning.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ComputingProject/Monte.csproj" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ComputingProject/MyClass.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ComputingProject/Properties/AssemblyInfo.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ComputingProject/bin/Debug/ComputingProject.dll" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ComputingProject/bin/Debug/ComputingProject.dll.mdb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ComputingProject/obj/Debug/.NETFramework,Version=v4.5.AssemblyAttribute.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ComputingProject/obj/Debug/ComputingProject.csproj.FilesWrittenAbsolute.txt" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ComputingProject/obj/Debug/ComputingProject.dll" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ComputingProject/obj/Debug/ComputingProject.dll.mdb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/DefaultSettings.xml" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Monte/bin/Debug/Monte.dll" afterPath="$PROJECT_DIR$/Monte/bin/Debug/Monte.dll" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Monte/bin/Debug/Monte.dll.mdb" afterPath="$PROJECT_DIR$/Monte/bin/Debug/Monte.dll.mdb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Monte/obj/Debug/Monte.dll" afterPath="$PROJECT_DIR$/Monte/obj/Debug/Monte.dll" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Monte/obj/Debug/Monte.dll.mdb" afterPath="$PROJECT_DIR$/Monte/obj/Debug/Monte.dll.mdb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Monte.userprefs" afterPath="$PROJECT_DIR$/Monte.userprefs" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Monte/BasicMCTS.cs" afterPath="$PROJECT_DIR$/Monte/BasicMCTS.cs" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Monte/MCTSMaster.cs" afterPath="$PROJECT_DIR$/Monte/MCTSMaster.cs" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/.idea.Monte/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/.idea.Monte/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Monte/AIState.cs" afterPath="$PROJECT_DIR$/Monte/AIState.cs" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Monte/DLModel.cs" afterPath="$PROJECT_DIR$/Monte/DLModel.cs" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Monte/FitnessBased.cs" afterPath="$PROJECT_DIR$/Monte/FitnessBased.cs" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Monte/MCTSWithLearning.cs" afterPath="$PROJECT_DIR$/Monte/MCTSWithLearning.cs" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Monte/MCTSWithPruning.cs" afterPath="$PROJECT_DIR$/Monte/MCTSWithPruning.cs" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Monte/Monte.csproj" afterPath="$PROJECT_DIR$/Monte/Monte.csproj" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -41,7 +23,7 @@
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300" />
+    <leaf />
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
@@ -155,11 +137,13 @@
       <workItem from="1487327900198" duration="825000" />
       <workItem from="1487593370939" duration="1881000" />
       <workItem from="1487689214572" duration="1154000" />
+      <workItem from="1488807382960" duration="12000" />
+      <workItem from="1488807455613" duration="40000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="4184000" />
+    <option name="totallyTimeSpent" value="4236000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -171,10 +155,10 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="0" width="1280" height="800" extended-state="6" />
+    <frame x="0" y="0" width="1280" height="800" extended-state="0" />
     <layout>
       <window_info id="Change Signature" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24609375" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24609375" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Errors In Solution" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Build" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -242,29 +226,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <marker date="1487689861000" expanded="true" signature="6:47" ph="..." />
-            <marker date="1487689861000" expanded="true" signature="64:4154" ph="{...}" />
-            <marker date="1487689861000" expanded="true" signature="103:4152" ph="{...}" />
-            <marker date="1487689861000" expanded="true" signature="402:2806" ph="{...}" />
-            <marker date="1487689861000" expanded="true" signature="696:2287" ph="{...}" />
-            <marker date="1487689861000" expanded="true" signature="705:797" ph="/* Console.WriteLine(&quot;Time elpased: &quot; + (latestTick-startTime)); ... */" />
-            <marker date="1487689861000" expanded="true" signature="1106:2227" ph="{...}" />
-            <marker date="1487689861000" expanded="true" signature="1154:1265" ph="{...}" />
-            <marker date="1487689861000" expanded="true" signature="1400:2122" ph="{...}" />
-            <marker date="1487689861000" expanded="true" signature="1589:1627" ph="{...}" />
-            <marker date="1487689861000" expanded="true" signature="1635:1828" ph="/* UBT (Upper Confidence Bound 1 applied to trees) function for determining ... */" />
-            <marker date="1487689861000" expanded="true" signature="2053:2115" ph="{...}" />
-            <marker date="1487689861000" expanded="true" signature="2292:2383" ph="/* Once we get to this point we have worked out the best move ... */" />
-            <marker date="1487689861000" expanded="true" signature="2502:2700" ph="{...}" />
-            <marker date="1487689861000" expanded="true" signature="2640:2695" ph="{...}" />
-            <marker date="1487689861000" expanded="true" signature="2932:4149" ph="{...}" />
-            <marker date="1487689861000" expanded="true" signature="3108:3951" ph="{...}" />
-            <marker date="1487689861000" expanded="true" signature="3217:3371" ph="{...}" />
-            <marker date="1487689861000" expanded="true" signature="3561:3764" ph="{...}" />
-            <marker date="1487689861000" expanded="true" signature="3919:3940" ph="{...}" />
-            <marker date="1487689861000" expanded="true" signature="4093:4145" ph="{...}" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -272,23 +234,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1245">
           <caret line="83" column="24" lean-forward="false" selection-start-line="83" selection-start-column="24" selection-end-line="83" selection-end-column="24" />
-          <folding>
-            <marker date="1487329370000" expanded="true" signature="6:89" ph="..." />
-            <marker date="1487329370000" expanded="true" signature="106:2129" ph="{...}" />
-            <marker date="1487329370000" expanded="true" signature="142:2127" ph="{...}" />
-            <marker date="1487329370000" expanded="true" signature="478:583" ph="{...}" />
-            <marker date="1487329370000" expanded="true" signature="607:740" ph="{...}" />
-            <marker date="1487329370000" expanded="true" signature="665:736" ph="/* thinkingTime = 5.0; ... */" />
-            <marker date="1487329370000" expanded="true" signature="779:928" ph="{...}" />
-            <marker date="1487329370000" expanded="true" signature="790:821" ph="{...}" />
-            <marker date="1487329370000" expanded="true" signature="832:849" ph="{...}" />
-            <marker date="1487329370000" expanded="true" signature="853:924" ph="/* thinkingTime = 5.0; ... */" />
-            <marker date="1487329370000" expanded="true" signature="970:1505" ph="{...}" />
-            <marker date="1487329370000" expanded="true" signature="981:1432" ph="{...}" />
-            <marker date="1487329370000" expanded="true" signature="1478:1501" ph="{...}" />
-            <marker date="1487329370000" expanded="true" signature="1528:1659" ph="{...}" />
-            <marker date="1487329370000" expanded="true" signature="1699:1913" ph="{...}" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -296,29 +241,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="45">
           <caret line="3" column="17" lean-forward="true" selection-start-line="3" selection-start-column="17" selection-end-line="3" selection-end-column="17" />
-          <folding>
-            <marker date="1487689861000" expanded="true" signature="6:47" ph="..." />
-            <marker date="1487689861000" expanded="true" signature="64:4154" ph="{...}" />
-            <marker date="1487689861000" expanded="true" signature="103:4152" ph="{...}" />
-            <marker date="1487689861000" expanded="true" signature="402:2806" ph="{...}" />
-            <marker date="1487689861000" expanded="true" signature="696:2287" ph="{...}" />
-            <marker date="1487689861000" expanded="true" signature="705:797" ph="/* Console.WriteLine(&quot;Time elpased: &quot; + (latestTick-startTime)); ... */" />
-            <marker date="1487689861000" expanded="true" signature="1106:2227" ph="{...}" />
-            <marker date="1487689861000" expanded="true" signature="1154:1265" ph="{...}" />
-            <marker date="1487689861000" expanded="true" signature="1400:2122" ph="{...}" />
-            <marker date="1487689861000" expanded="true" signature="1589:1627" ph="{...}" />
-            <marker date="1487689861000" expanded="true" signature="1635:1828" ph="/* UBT (Upper Confidence Bound 1 applied to trees) function for determining ... */" />
-            <marker date="1487689861000" expanded="true" signature="2053:2115" ph="{...}" />
-            <marker date="1487689861000" expanded="true" signature="2292:2383" ph="/* Once we get to this point we have worked out the best move ... */" />
-            <marker date="1487689861000" expanded="true" signature="2502:2700" ph="{...}" />
-            <marker date="1487689861000" expanded="true" signature="2640:2695" ph="{...}" />
-            <marker date="1487689861000" expanded="true" signature="2932:4149" ph="{...}" />
-            <marker date="1487689861000" expanded="true" signature="3108:3951" ph="{...}" />
-            <marker date="1487689861000" expanded="true" signature="3217:3371" ph="{...}" />
-            <marker date="1487689861000" expanded="true" signature="3561:3764" ph="{...}" />
-            <marker date="1487689861000" expanded="true" signature="3919:3940" ph="{...}" />
-            <marker date="1487689861000" expanded="true" signature="4093:4145" ph="{...}" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -326,23 +249,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1245">
           <caret line="83" column="24" lean-forward="false" selection-start-line="83" selection-start-column="24" selection-end-line="83" selection-end-column="24" />
-          <folding>
-            <marker date="1487329370000" expanded="true" signature="6:89" ph="..." />
-            <marker date="1487329370000" expanded="true" signature="106:2129" ph="{...}" />
-            <marker date="1487329370000" expanded="true" signature="142:2127" ph="{...}" />
-            <marker date="1487329370000" expanded="true" signature="478:583" ph="{...}" />
-            <marker date="1487329370000" expanded="true" signature="607:740" ph="{...}" />
-            <marker date="1487329370000" expanded="true" signature="665:736" ph="/* thinkingTime = 5.0; ... */" />
-            <marker date="1487329370000" expanded="true" signature="779:928" ph="{...}" />
-            <marker date="1487329370000" expanded="true" signature="790:821" ph="{...}" />
-            <marker date="1487329370000" expanded="true" signature="832:849" ph="{...}" />
-            <marker date="1487329370000" expanded="true" signature="853:924" ph="/* thinkingTime = 5.0; ... */" />
-            <marker date="1487329370000" expanded="true" signature="970:1505" ph="{...}" />
-            <marker date="1487329370000" expanded="true" signature="981:1432" ph="{...}" />
-            <marker date="1487329370000" expanded="true" signature="1478:1501" ph="{...}" />
-            <marker date="1487329370000" expanded="true" signature="1528:1659" ph="{...}" />
-            <marker date="1487329370000" expanded="true" signature="1699:1913" ph="{...}" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -350,29 +256,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="33">
           <caret line="88" column="45" lean-forward="true" selection-start-line="88" selection-start-column="45" selection-end-line="88" selection-end-column="45" />
-          <folding>
-            <marker date="1487689861000" expanded="true" signature="6:47" ph="..." />
-            <marker date="1487689861000" expanded="true" signature="64:4154" ph="{...}" />
-            <marker date="1487689861000" expanded="true" signature="103:4152" ph="{...}" />
-            <marker date="1487689861000" expanded="true" signature="402:2806" ph="{...}" />
-            <marker date="1487689861000" expanded="true" signature="696:2287" ph="{...}" />
-            <marker date="1487689861000" expanded="true" signature="705:797" ph="/* Console.WriteLine(&quot;Time elpased: &quot; + (latestTick-startTime)); ... */" />
-            <marker date="1487689861000" expanded="true" signature="1106:2227" ph="{...}" />
-            <marker date="1487689861000" expanded="true" signature="1154:1265" ph="{...}" />
-            <marker date="1487689861000" expanded="true" signature="1400:2122" ph="{...}" />
-            <marker date="1487689861000" expanded="true" signature="1589:1627" ph="{...}" />
-            <marker date="1487689861000" expanded="true" signature="1635:1828" ph="/* UBT (Upper Confidence Bound 1 applied to trees) function for determining ... */" />
-            <marker date="1487689861000" expanded="true" signature="2053:2115" ph="{...}" />
-            <marker date="1487689861000" expanded="true" signature="2292:2383" ph="/* Once we get to this point we have worked out the best move ... */" />
-            <marker date="1487689861000" expanded="true" signature="2502:2700" ph="{...}" />
-            <marker date="1487689861000" expanded="true" signature="2640:2695" ph="{...}" />
-            <marker date="1487689861000" expanded="true" signature="2932:4149" ph="{...}" />
-            <marker date="1487689861000" expanded="true" signature="3108:3951" ph="{...}" />
-            <marker date="1487689861000" expanded="true" signature="3217:3371" ph="{...}" />
-            <marker date="1487689861000" expanded="true" signature="3561:3764" ph="{...}" />
-            <marker date="1487689861000" expanded="true" signature="3919:3940" ph="{...}" />
-            <marker date="1487689861000" expanded="true" signature="4093:4145" ph="{...}" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -380,23 +264,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1245">
           <caret line="83" column="24" lean-forward="false" selection-start-line="83" selection-start-column="24" selection-end-line="83" selection-end-column="24" />
-          <folding>
-            <marker date="1487329370000" expanded="true" signature="6:89" ph="..." />
-            <marker date="1487329370000" expanded="true" signature="106:2129" ph="{...}" />
-            <marker date="1487329370000" expanded="true" signature="142:2127" ph="{...}" />
-            <marker date="1487329370000" expanded="true" signature="478:583" ph="{...}" />
-            <marker date="1487329370000" expanded="true" signature="607:740" ph="{...}" />
-            <marker date="1487329370000" expanded="true" signature="665:736" ph="/* thinkingTime = 5.0; ... */" />
-            <marker date="1487329370000" expanded="true" signature="779:928" ph="{...}" />
-            <marker date="1487329370000" expanded="true" signature="790:821" ph="{...}" />
-            <marker date="1487329370000" expanded="true" signature="832:849" ph="{...}" />
-            <marker date="1487329370000" expanded="true" signature="853:924" ph="/* thinkingTime = 5.0; ... */" />
-            <marker date="1487329370000" expanded="true" signature="970:1505" ph="{...}" />
-            <marker date="1487329370000" expanded="true" signature="981:1432" ph="{...}" />
-            <marker date="1487329370000" expanded="true" signature="1478:1501" ph="{...}" />
-            <marker date="1487329370000" expanded="true" signature="1528:1659" ph="{...}" />
-            <marker date="1487329370000" expanded="true" signature="1699:1913" ph="{...}" />
-          </folding>
         </state>
       </provider>
     </entry>

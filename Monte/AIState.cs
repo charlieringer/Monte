@@ -26,7 +26,11 @@ namespace Monte
 		//The score which is derived from the learner and represents the score for the state
 		public float? stateScore { get; set; }
 
-		public AIState(int pIndex, AIState _parent, int _depth)
+	    public AIState()
+	    {
+	    }
+
+	    public AIState(int pIndex, AIState _parent, int _depth)
 		{
 			playerIndex = pIndex;
 			parent = _parent;

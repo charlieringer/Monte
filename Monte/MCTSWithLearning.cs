@@ -125,7 +125,7 @@ namespace Monte
 				foreach(AIState child in children)
 				{
 					if (child.stateScore == null) {
-						child.stateScore = (float)model.evaluate(child.stateRep, child.playerIndex);
+						child.stateScore = (float)model.evaluate(child.stateRep);
 					}
 					totalScore += child.stateScore.Value;
 					scores.Add (child.stateScore.Value);
