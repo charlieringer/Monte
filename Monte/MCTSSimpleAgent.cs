@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace Monte
 {
-	public class BasicMCTS : MCTSMaster
+	public class MCTSSimpleAgent : MCTSMasterAgent
 	{
-		public BasicMCTS(): base(){}
-		public BasicMCTS(string file):base(file){}
-		public BasicMCTS (double _thinkingTime, double _exploreWeight, int _maxRollout) : base(_thinkingTime, _exploreWeight, _maxRollout){}
+		public MCTSSimpleAgent(): base(){}
+		public MCTSSimpleAgent(string file):base(file){}
+		public MCTSSimpleAgent (double _thinkingTime, double _exploreWeight, int _maxRollout) : base(_thinkingTime, _exploreWeight, _maxRollout){}
 
 		//Main MCTS algortim
 	    //TODO: Handle games sttates that can not generate children.

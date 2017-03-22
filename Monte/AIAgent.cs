@@ -5,7 +5,7 @@ using System.Xml;
 
 namespace Monte
 {
-	abstract public class MCTSMaster
+	public abstract class AIAgent
 	{
 		protected double thinkingTime;
 		protected double exploreWeight;
@@ -17,14 +17,14 @@ namespace Monte
 		public bool started;
 		public AIState next;
 
-		public MCTSMaster (double _thinkingTime, double _exploreWeight, int _maxRollout)
+		protected AIAgent (double _thinkingTime, double _exploreWeight, int _maxRollout)
 		{
 			thinkingTime = _thinkingTime;
 			exploreWeight = _exploreWeight;
 			maxRollout = _maxRollout;
 		}
 
-		public MCTSMaster ()
+		protected AIAgent ()
 		{
 			parseXML ("Assets/Monte/DefaultSettings.xml");
 			//thinkingTime = 5.0;
@@ -32,7 +32,7 @@ namespace Monte
 			//maxRollout = 64;
 		}
 
-		public MCTSMaster (String fileName)
+		protected AIAgent (string fileName)
 		{
 			try{
 				parseXML (fileName);
@@ -83,10 +83,8 @@ namespace Monte
 			//Set started to true
 			started = true;
 		}
-		//Main MCTS algortim
-		abstract protected void mainAlgorithm(AIState initalState);
-		//Rollout function (plays random moves till it hits a termination)
-		abstract protected void rollout(AIState rolloutStart);
+		//Main algortim
+		protected abstract void mainAlgorithm(AIState initalState);
 	}
 }
 

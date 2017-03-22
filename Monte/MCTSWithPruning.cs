@@ -5,12 +5,12 @@ using System.Xml;
 
 namespace Monte
 {
-	public class MCTSWithPruning : MCTSMaster
+	public class MCTSWithPruning : MCTSMasterAgent
 	{
-		private DLModel model;
+		private Learner model;
 		private double pruningFactor;
 
-		public MCTSWithPruning (double _thinkingTime, float _exploreWeight, int _maxRollout, DLModel _model, double _pruningFactor)
+		public MCTSWithPruning (double _thinkingTime, float _exploreWeight, int _maxRollout, Learner _model, double _pruningFactor)
 			: base( _thinkingTime, _exploreWeight, _maxRollout)
 		{
 			model = _model;
@@ -20,7 +20,7 @@ namespace Monte
 
 		public MCTSWithPruning (String modelName) : base ()
 		{
-			model = new DLModel (modelName);
+			model = new Learner (modelName);
 			XmlDocument settings = new XmlDocument ();
 			settings.Load("Monte/DefaultSettings.xml"); 
 
@@ -31,7 +31,7 @@ namespace Monte
 
 		public MCTSWithPruning (String modelName, String settingsFile) : base (settingsFile)
 		{
-			model = new DLModel (modelName);
+			model = new Learner (modelName);
 			XmlDocument settings = new XmlDocument ();
 			settings.Load("settingsFile"); 
 
@@ -141,7 +141,7 @@ namespace Monte
 				foreach(AIState child in children)
 				{
 					if (child.stateScore == null) {
-						child.stateScore = (float)model.evaluate(child.stateRep);
+						child.stateScore = (float)model.evaluate(child.stateRep, child.playerIndex);
 					}
 					totalScore += child.stateScore.Value;
 					scores.Add (child.stateScore.Value);
@@ -186,7 +186,7 @@ namespace Monte
 				return null;
 			}
 			foreach(AIState state in startList)
-				state.stateScore = (float)model.evaluate(state.stateRep);
+				state.stateScore = (float)model.evaluate(state.stateRep, state.playerIndex);
 			AIState pivot = startList [0];
 
 			List<AIState> left = null;
@@ -202,7 +202,7 @@ namespace Monte
 		{
 			//Sort the list
 			foreach(AIState state in list)
-				state.stateScore = (float)model.evaluate(state.stateRep);
+				state.stateScore = (float)model.evaluate(state.stateRep, state.playerIndex);
 			list = mergeSort(list);
 
 			int numbNodesToRemove = (int)(list.Count * pruningFactor);

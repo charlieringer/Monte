@@ -5,23 +5,23 @@ using System.Xml;
 
 namespace Monte
 {
-	public class MCTSWithLearning : MCTSMaster
+	public class MCTSWithLearning : MCTSMasterAgent
 	{
-		private DLModel model;
+		private Learner model;
 
-		public MCTSWithLearning (double _thinkingTime, double _exploreWeight, int _maxRollout, DLModel _model): base(_thinkingTime, _exploreWeight, _maxRollout)
+		public MCTSWithLearning (double _thinkingTime, double _exploreWeight, int _maxRollout, Learner _model): base(_thinkingTime, _exploreWeight, _maxRollout)
 		{ 
 			model = _model;
 		}
 
 		public MCTSWithLearning (String modelName) : base ()
 		{
-			model = new DLModel (modelName);
+			model = new Learner (modelName);
 		}
 			
 		public MCTSWithLearning (String modelName, String settingsFile) : base (settingsFile)
 		{
-			model = new DLModel (modelName);
+			model = new Learner (modelName);
 		}
 			
 
@@ -125,7 +125,7 @@ namespace Monte
 				foreach(AIState child in children)
 				{
 					if (child.stateScore == null) {
-						child.stateScore = (float)model.evaluate(child.stateRep);
+						child.stateScore = (float)model.evaluate(child.stateRep, child.playerIndex);
 					}
 					totalScore += child.stateScore.Value;
 					scores.Add (child.stateScore.Value);

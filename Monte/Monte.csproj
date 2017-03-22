@@ -31,15 +31,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DLModel2.cs" />
+    <Compile Include="MCTSMasterAgent.cs" />
+    <Compile Include="Network.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AIState.cs" />
-    <Compile Include="BasicMCTS.cs" />
+    <Compile Include="MCTSSimpleAgent.cs" />
     <Compile Include="MCTSWithPruning.cs" />
     <Compile Include="MCTSWithLearning.cs" />
-    <Compile Include="MCTSMaster.cs" />
-    <Compile Include="FitnessBased.cs" />
-    <Compile Include="DLModel.cs" />
+    <Compile Include="AIAgent.cs" />
+    <Compile Include="ModelBased.cs" />
+    <Compile Include="Learner.cs" />
+    <Compile Include="RandomAgent.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
