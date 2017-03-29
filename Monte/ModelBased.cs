@@ -6,11 +6,6 @@ namespace Monte
 {
 	public class ModelBased : AIAgent
 	{
-		protected Thread aiThread;
-
-		public bool done;
-		public bool started;
-		public AIState next;
 		Learner model;
 
 		public ModelBased(Learner _model)
@@ -38,7 +33,6 @@ namespace Monte
 					bestScore = child.stateScore;
 				}
 			}
-		    Console.WriteLine("Total for this itter: " + total);
 			next = best;
 			done = true;
 		}

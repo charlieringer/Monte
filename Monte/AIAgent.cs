@@ -10,7 +10,7 @@ namespace Monte
 		protected double thinkingTime;
 		protected double exploreWeight;
 		protected int maxRollout;
-		protected System.Random randGen = new System.Random (1);
+		protected System.Random randGen = new System.Random ();
 		protected Thread aiThread;
 
 		public bool done;

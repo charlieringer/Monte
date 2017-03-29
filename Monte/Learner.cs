@@ -48,6 +48,8 @@ namespace Monte
 
         private void parseModel(string modelfile)
         {
+            player0Network = new Network(0);
+            player1Network = new Network(1);
             string[] lines = File.ReadAllLines(modelfile);
 
             lengthOfInput = int.Parse(lines[0]);
@@ -61,14 +63,9 @@ namespace Monte
             player0Network.biasH = new double[numbHiddenLayers, lengthOfInput];
             player1Network.biasH = new double[numbHiddenLayers, lengthOfInput];
 
-            //TODO: Parse model from file.
-            for (int i = 1; i < lines.Length; i++)
-            {
-//                if (i < (lengthOfInput * lengthOfInput) + 1) w1[i - 1] = double.Parse(lines[i]);
-//                else if (i < lengthOfInput*lengthOfInput+lengthOfInput+1) w2[i-lengthOfInput*lengthOfInput-1] = double.Parse(lines[i]);
-//                else if (i < lines.Length-1) biasH[i-(lengthOfInput*lengthOfInput+lengthOfInput)-1] = double.Parse(lines[i]);
-//                else biasOut = double.Parse(lines[i]);
-            }
+            int nextStartPos = player0Network.readFromFile(lines, 2);
+            player1Network.readFromFile(lines, nextStartPos);
+
         }
 
         public void train(int gamesPerEpisode, int episodes, StateCreator sc)
@@ -79,8 +76,8 @@ namespace Monte
             if (lengthOfInput == 0)
             {
                 lengthOfInput = sc().stateRep.Length;
-                player0Network = new Network(lengthOfInput, numbHiddenLayers);
-                player1Network = new Network(lengthOfInput, numbHiddenLayers);
+                player0Network = new Network(lengthOfInput, numbHiddenLayers, 0);
+                player1Network = new Network(lengthOfInput, numbHiddenLayers, 1);
             }
 
             //For every episode
@@ -92,9 +89,9 @@ namespace Monte
                 Console.WriteLine("Training Episode " + (i+1) + " of " + episodes +" complete. Total cost: " +totalCost);
             }
             //Once done we output it to a file which is the time it was made
-            string dataString = $"{0:HH.mm.ss_dd.MM.yyyy},date";
+            string dateString = String.Format("{0:HH.mm.ss_dd.MM.yyyy}",DateTime.Now);
 
-            string fileName = "Model_" + dataString + ".model";
+            string fileName = "Model_" + dateString + ".model";
             File.Create(fileName).Close();
             StreamWriter writer = new StreamWriter(fileName);
             //We just write all of the values to file
@@ -135,13 +132,25 @@ namespace Monte
             //Loop count (for detecting drawn games
             int count = 0;
             //Reward for this play through
-            double thisReward = 0;
+            //double thisReward = 0;
             while(currentState.getWinner() < 0)
             {
                 count++;
                 List<AIState> children = currentState.generateChildren();
                 if (count == maxForwardIters || children.Count == 0)
                 {
+                    while (currentState.parent != null)
+                    {
+                        inputs.Add(currentState.stateRep);
+                        results.Add(currentState.stateScore.Value);
+
+                        rewards.Add(0.5);
+
+                        double[,] hiddenLayer = getHiddenLayers(currentState.stateRep, currentState.playerIndex);
+                        hiddenLayers.Add (hiddenLayer);
+                        playerIndxs.Add(currentState.playerIndex);
+                        currentState = currentState.parent;
+                    }
                     //TODO: Consider how we handle drawn games. Currently we just ignore them.
                     return;
                 }
@@ -154,8 +163,8 @@ namespace Monte
                 {
                     child.stateScore = (float)evaluate(child.stateRep, child.playerIndex);
                     float childScore = child.stateScore.Value;
-//                    totalScore += child.stateScore.Value;
-//                    scores.Add(child.stateScore.Value);
+                    totalScore += child.stateScore.Value;
+                    scores.Add(child.stateScore.Value);
 
                     if (childScore > bestScore)
                     {
@@ -164,16 +173,17 @@ namespace Monte
                     }
                 }
 
-//                double randomPoint = randGen.NextDouble() * totalScore;
-//                float runningTotal = 0.0f;
-//                int i = 0;
-//                for (; i < scores.Count; i++) {
-//                    runningTotal += scores [i];
-//                    if (runningTotal >= randomPoint) {
-//                        break;
-//                    }
-//                }
-//                int endResult = children[i].getWinner ();
+                double randomPoint = randGen.NextDouble() * totalScore;
+                float runningTotal = 0.0f;
+                int i = 0;
+                for (; i < scores.Count; i++) {
+                    runningTotal += scores [i];
+                    if (runningTotal >= randomPoint) {
+                        break;
+                    }
+                }
+               // int endResult = children[i].getWinner ();
+
                 int endResult = bestChild.getWinner ();
                 if(endResult >= 0)
                 {
@@ -190,10 +200,8 @@ namespace Monte
             {
                 inputs.Add(currentState.stateRep);
                 results.Add(currentState.stateScore.Value);
-                //TODO: Correctly Calculate Reward. I think this is done. Need to double check
 
                 rewards.Add((currentState.wins > currentState.losses) ? 1 : 0);
-                //rewards.Add(reward);
 
                 double[,] hiddenLayer = getHiddenLayers(currentState.stateRep, currentState.playerIndex);
                 hiddenLayers.Add (hiddenLayer);
@@ -205,41 +213,52 @@ namespace Monte
         private double backpropagate(List<int[]> inputs, List<double[,]> hiddenLayers, List<double> output, List<double> rewards, List<int> playerIndxs)
         {
             double totalCost = 0.0;
-            double[] hiddenCosts = new double[lengthOfInput];
-
+            
             for (int i = 0; i < inputs.Count; i++)
             {
                 Network thisPlayer = (playerIndxs[i] == 0) ? player0Network : player1Network;
                 //Updates weights between output layer and hidden layer
                 double cost = Math.Abs(output[i] - rewards[i]);
+                //double cost = Math.Sqrt(Math.Exp(output[i] - rewards[i]));
                 totalCost += cost;
-                double partialDir = -output[i] * (1 - output [i]);
+                double[] hiddenCosts = new double[lengthOfInput];
+                double partialDir = -output[i] * (1 - output [i]) * cost;
                 for (int j = 0; j < thisPlayer.wOut.Length; j++) {
-                    //TODO: Results below needs to be the output from the hidden layer NOT the total output (think this is done now)
-                    thisPlayer.wOut[j] -= (alpha * cost * partialDir * hiddenLayers[i][numbHiddenLayers-1, j]);
-                    hiddenCosts[j] = cost*partialDir*thisPlayer.wOut[j];
+                    hiddenCosts[j] = -output[i] * (1 - output [i]) * cost * thisPlayer.wOut[j];
+                    thisPlayer.wOut[j] -= (alpha * partialDir * hiddenLayers[i][numbHiddenLayers-1, j]);
                 }
                 thisPlayer.biasOut -= (alpha * cost * partialDir);
 
-                //Updates weights between hidden layer and input layer
+                //Updates weights between hiddens layer and input layer
+                //For every hidden layer
                 for (int k = numbHiddenLayers-1; k >= 0; k--)
                 {
+                    double[] nextHiddenCosts = new double[lengthOfInput];
+                    //And for every node in that layer
                     for (int l = 0; l < lengthOfInput; l++)
                     {
                         //TODO:Work out what the hell hiddenCosts[l] should be :(
+                        //Work out it's cose, the weight value
                         double hCost = hiddenCosts[l];
                         double hiddenLayerKL = hiddenLayers[i][k,l];
-                        double partialDirH = 1 - (hiddenLayerKL * hiddenLayerKL);
+                        double partialDirH = (1 - hiddenLayerKL * hiddenLayerKL) * hCost;
+
                         for (int m = 0; m < lengthOfInput; m++)
                         {
-                            thisPlayer.wH[k,l * lengthOfInput + m] -= (alpha * hCost * partialDirH * inputs[i][m]);
+                            nextHiddenCosts[m] += partialDirH * thisPlayer.wH[k,m * lengthOfInput + l];
+
+                            if(k == 0) thisPlayer.wH[k,m * lengthOfInput + l] -= (alpha * partialDirH * inputs[i][l]);
+                            else thisPlayer.wH[k,m * lengthOfInput + l] -= (alpha * hCost * partialDirH * hiddenLayers[i][k-1,l]);
+                            //hiddencost m????
+                            //WHAT IS COST? IS it cost or hCost?
+                            nextHiddenCosts[m] += (1 - hiddenLayerKL * hiddenLayerKL) * cost * thisPlayer.wH[k,m * lengthOfInput + l];
                         }
                         //TODO: Check this works...
                         //Once we are done updated all of the weights assoiated with this node we update the
                         //cost to the relate to the node (so we can work backwards)
-                        hiddenCosts[l] = cost*partialDir*hiddenLayers[i][k,l];
                         thisPlayer.biasH[k,l] -= (alpha * hCost * partialDirH);
                     }
+                    hiddenCosts = nextHiddenCosts;
                 }
             }
             return totalCost;
@@ -249,7 +268,6 @@ namespace Monte
         {
             double[,] hiddenLayer = getHiddenLayers(stateBoard, playerIndx);
             double score = getRawScore(hiddenLayer, playerIndx);
-
             return sig(score);
         }
 
@@ -288,13 +306,13 @@ namespace Monte
             return returnValue;
         }
 
-        private double sig(double x)
+        private static double sig(double x)
         {
             //s(x) = 1/1*e^-x
             return 1.0/(1.0+Math.Exp(-x));
         }
 
-        private double tanH(double x)
+        private static double tanH(double x)
         {
             return 2.0/(1.0+Math.Exp(-x*2))-1;
         }
@@ -309,15 +327,28 @@ namespace Monte
             public double[] wOut;
             //Bias unit for output node
             public double biasOut;
+            //number of layers
+            private int numbHiddenLayers;
+            //number of inputs
+            private int lengthOfInput;
+            //indx of player (for debugging)
+            private int pIndx;
 
-            public Network(int lengthOfInput, int numbHiddenLayers)
+            public Network(int _pIndx)
+            {
+                pIndx = _pIndx;
+            }
+
+            public Network(int lengthOfInput, int numbHiddenLayers, int _pIndx)
             {
                 initWeights(lengthOfInput, numbHiddenLayers);
+                pIndx = _pIndx;
             }
 
             private void initWeights(int _lengthOfInput, int _numbHiddenLayers)
             {
-                //TODO: init weights correctly
+                numbHiddenLayers = _numbHiddenLayers;
+                lengthOfInput = _lengthOfInput;
                 Random randGen = new Random (1);
                 if (_numbHiddenLayers == 0) _numbHiddenLayers = 1;
                 wH = new double[_numbHiddenLayers, _lengthOfInput * _lengthOfInput];
@@ -338,7 +369,38 @@ namespace Monte
 
             public void writeToFile(StreamWriter writer)
             {
-                //TODO: Write to file
+                for (int i = 0; i < numbHiddenLayers; i++)
+                {
+                    for (int j = 0; j < lengthOfInput * lengthOfInput; j++) writer.WriteLine(wH[i, j]);
+                    for (int j = 0; j < lengthOfInput; j++) writer.WriteLine(biasH[i, j]);
+                }
+                for (int i = 0; i < lengthOfInput; i++) writer.WriteLine(wOut[i]);
+                writer.WriteLine(biasOut);
+            }
+
+            public int readFromFile(string[] lines, int startLine)
+            {
+                int counter = startLine;
+                for (int i = 0; i < numbHiddenLayers; i++)
+                {
+                    for (int j = 0; j < lengthOfInput * lengthOfInput; j++)
+                    {
+                        wH[i, j] = double.Parse(lines[counter]);
+                        counter++;
+                    }
+                    for (int j = 0; j < lengthOfInput; j++)
+                    {
+                        biasH[i, j] = double.Parse(lines[counter]);
+                        counter++;
+                    }
+                }
+                for (int i = 0; i < lengthOfInput; i++)
+                {
+                    wOut[i] = double.Parse(lines[counter]);
+                    counter++;
+                }
+                biasOut = double.Parse(lines[counter]);
+                return ++counter;
             }
         }
     }

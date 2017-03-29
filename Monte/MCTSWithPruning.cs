@@ -10,7 +10,7 @@ namespace Monte
 		private Learner model;
 		private double pruningFactor;
 
-		public MCTSWithPruning (double _thinkingTime, float _exploreWeight, int _maxRollout, Learner _model, double _pruningFactor)
+		public MCTSWithPruning (double _thinkingTime, double _exploreWeight, int _maxRollout, Learner _model, double _pruningFactor)
 			: base( _thinkingTime, _exploreWeight, _maxRollout)
 		{
 			model = _model;
@@ -18,7 +18,7 @@ namespace Monte
 		}
 
 
-		public MCTSWithPruning (String modelName) : base ()
+		public MCTSWithPruning (String modelName)
 		{
 			model = new Learner (modelName);
 			XmlDocument settings = new XmlDocument ();
@@ -45,7 +45,7 @@ namespace Monte
 		{
 			//Make the intial children
 			List<AIState> children = initalState.generateChildren ();
-			children = prune (children);
+			//children = prune (children);
 
 			//Get the start time
 			double startTime = (DateTime.Now.Ticks)/10000000;
@@ -53,20 +53,21 @@ namespace Monte
 			while (latestTick-startTime < thinkingTime) {
 				//Update the latest tick
 				latestTick = (DateTime.Now.Ticks)/10000000;
-				//Set the best scores and index
-				double bestScore = -1;
-				int bestIndex = -1;
 				//Once done set the best child to this
 				AIState bestNode = initalState;
 				//And loop through it's child
 				while(bestNode.children.Count > 0)
 				{
 					//Prune the children
-					bestNode.children =  prune(bestNode.children);
+				    if (bestNode.unpruned)
+				    {
+				        bestNode.children =  prune(bestNode.children);
+				        bestNode.unpruned = false;
+				    }
 
-					//Set the scores as a base line
-					bestScore = -1;
-					bestIndex = -1;
+				    //Set the best scores and index
+				    double bestScore = -1;
+				    int bestIndex = -1;
 
 					for(int i = 0; i < bestNode.children.Count; i++){
 						//Scores as per the previous part
@@ -129,7 +130,7 @@ namespace Monte
 			{
 				//Loop through till a terminal state is found
 				count++;
-				if (count >= maxRollout) {
+				if (count >= maxRollout || children.Count == 0) {
 					//or maxroll out is hit
 
 					rolloutStart.addDraw ();
@@ -201,15 +202,15 @@ namespace Monte
 		private List<AIState> prune(List<AIState> list)
 		{
 			//Sort the list
-			foreach(AIState state in list)
-				state.stateScore = (float)model.evaluate(state.stateRep, state.playerIndex);
+		    for (int i = 0; i < list.Count; i++)
+		    {
+		        list[i].stateScore = (float)model.evaluate(list[i].stateRep, list[i].playerIndex);
+		    }
 			list = mergeSort(list);
 
-			int numbNodesToRemove = (int)(list.Count * pruningFactor);
+			int numbNodesToRemove = (int)Math.Floor(list.Count * pruningFactor);
 			list.RemoveRange(0, numbNodesToRemove);
 			return list;
-
-
 		}
 
 		private static List<AIState> mergeSort(List<AIState> startList)
@@ -251,10 +252,10 @@ namespace Monte
 					right.RemoveAt(0);
 				}
 			}
-			if (left.Count > 0) {
-				foreach(AIState state in left)
-					returnList.Add(state);
-			}
+//			if (left.Count > 0) {
+//				foreach(AIState state in left)
+//					returnList.Add(state);
+//			}
 			for (int i = 0; i < left.Count; i++) {
 				returnList.Add (left [i]);  
 			}			

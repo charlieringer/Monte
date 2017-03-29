@@ -7,6 +7,7 @@ namespace Monte
 	//This is for the Client to implement
 	public abstract class AIState
 	{
+	    public bool unpruned = true;
 		//Tracks Wins
 		public int wins { get; set; }
 		//Tracks Losses

@@ -100,6 +100,7 @@ namespace Monte
 		//Rollout function (plays random moves till it hits a termination)
 		protected override void rollout(AIState rolloutStart)
 		{
+		//TODO: Add the guess from the DL Model at the end of a rollout.
 			bool terminalStateFound = false;
 			//Get the children
 			List<AIState> children = rolloutStart.generateChildren();
