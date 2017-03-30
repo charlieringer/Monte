@@ -22,16 +22,17 @@ namespace Monte
         public Learner (string modelfile) : this(modelfile, "Assets/Monte/DefaultSettings.xml") {}
         public Learner(string modelfile, string settingsFile)
         {
-            parseModel((modelfile));
             parseXML(settingsFile);
-        }
+            parseModel(modelfile);
 
-        public Learner(double _alpha, int _maxItters, int _hiddenLayers)
-        {
-            alpha = _alpha;
-            maxForwardIters = _maxItters;
-            numbHiddenLayers = _hiddenLayers;
         }
+//
+//        public Learner(double _alpha, int _maxItters, int _hiddenLayers)
+//        {
+//            alpha = _alpha;
+//            maxForwardIters = _maxItters;
+//            numbHiddenLayers = _hiddenLayers;
+//        }
 
         private void parseXML(string settingsFile)
         {
@@ -83,6 +84,10 @@ namespace Monte
             //For every episode
             for(int i = 0; i < episodes; i++)
             {
+                if (i == episodes - 1)
+                {
+                    Console.WriteLine("Last Epoch");
+                }
                 //Play n games and return the total cost for this episode (or epoch)
                 double totalCost = trainingEpisode(sc, gamesPerEpisode);
                 //Output this cost (so we can see if our cost is reducing
@@ -139,6 +144,7 @@ namespace Monte
                 List<AIState> children = currentState.generateChildren();
                 if (count == maxForwardIters || children.Count == 0)
                 {
+                    //TODO: Do we want to handle draws like this?
                     while (currentState.parent != null)
                     {
                         inputs.Add(currentState.stateRep);
@@ -151,40 +157,62 @@ namespace Monte
                         playerIndxs.Add(currentState.playerIndex);
                         currentState = currentState.parent;
                     }
-                    //TODO: Consider how we handle drawn games. Currently we just ignore them.
                     return;
                 }
-                float totalScore = 0.0f;
-                float bestScore = 0.0f;
-                AIState bestChild = null;
+//                float totalScore = 0.0f;
+//                float bestScore = 0.0f;
+//                AIState bestChild = null;
+//
+//                List<float> scores = new List<float> ();
+//                foreach(AIState child in children)
+//                {
+//                    child.stateScore = (float)evaluate(child.stateRep, child.playerIndex);
+//                    float childScore = child.stateScore.Value;
+//                    totalScore += child.stateScore.Value;
+//                    scores.Add(child.stateScore.Value);
+//
+//                    if (childScore > bestScore)
+//                    {
+//                        bestScore = childScore;
+//                        bestChild = child;
+//                    }
+//                }
+//
+//                double randomPoint = randGen.NextDouble() * totalScore;
+//                float runningTotal = 0.0f;
+//                int i = 0;
+//                for (; i < scores.Count; i++) {
+//                    runningTotal += scores [i];
+//                    if (runningTotal >= randomPoint) {
+//                        break;
+//                    }
+//                }
+               // int endResult = children[i].getWinner ();
+                //int endResult = bestChild.getWinner ();
 
-                List<float> scores = new List<float> ();
                 foreach(AIState child in children)
                 {
                     child.stateScore = (float)evaluate(child.stateRep, child.playerIndex);
-                    float childScore = child.stateScore.Value;
-                    totalScore += child.stateScore.Value;
-                    scores.Add(child.stateScore.Value);
-
-                    if (childScore > bestScore)
-                    {
-                        bestScore = childScore;
-                        bestChild = child;
-                    }
                 }
 
-                double randomPoint = randGen.NextDouble() * totalScore;
-                float runningTotal = 0.0f;
-                int i = 0;
-                for (; i < scores.Count; i++) {
-                    runningTotal += scores [i];
-                    if (runningTotal >= randomPoint) {
+                children = AIState.mergeSort(children);
+                bool childSelected = false;
+                int selectedChild = 0;
+
+                for (int i = children.Count; i == 0; i--)
+                {
+                    Double randNum = randGen.NextDouble();
+                    if (randNum < children[i].stateScore || randNum > 0.8)
+                    {
+
+                        selectedChild = i;
+                        childSelected = true;
                         break;
                     }
                 }
-               // int endResult = children[i].getWinner ();
+                if (!childSelected) selectedChild = children.Count - 1;
 
-                int endResult = bestChild.getWinner ();
+                int endResult = children[selectedChild].getWinner();
                 if(endResult >= 0)
                 {
                     if (endResult == currentState.playerIndex) currentState.addWin();
@@ -193,7 +221,8 @@ namespace Monte
                 }
                 //Otherwise select that node as the children and continue
 //                currentState = children[i];
-                currentState = bestChild;
+                //currentState = bestChild;
+                currentState = children[selectedChild];
             }
 
             while (currentState.parent != null)
@@ -216,47 +245,63 @@ namespace Monte
             
             for (int i = 0; i < inputs.Count; i++)
             {
+                //Select the relevant network based on which was used to play this move.
                 Network thisPlayer = (playerIndxs[i] == 0) ? player0Network : player1Network;
-                //Updates weights between output layer and hidden layer
-                double cost = Math.Abs(output[i] - rewards[i]);
-                //double cost = Math.Sqrt(Math.Exp(output[i] - rewards[i]));
-                totalCost += cost;
+                //Hidden Costs used for updating the hidden layers later...
                 double[] hiddenCosts = new double[lengthOfInput];
-                double partialDir = -output[i] * (1 - output [i]) * cost;
-                for (int j = 0; j < thisPlayer.wOut.Length; j++) {
-                    hiddenCosts[j] = -output[i] * (1 - output [i]) * cost * thisPlayer.wOut[j];
-                    thisPlayer.wOut[j] -= (alpha * partialDir * hiddenLayers[i][numbHiddenLayers-1, j]);
+                //Updates weights between output layer and hidden layer
+                //double cost = Math.Abs(output[i] - rewards[i]);
+                //double cost = Math.Sqrt(Math.Pow(output[i] - rewards[i], 2));
+                double cost = Math.Pow(output[i] - rewards[i], 2);
+                totalCost += cost;
+                double sigDir = output[i] * (1 - output[i]);
+                //tot error = cost * sigdir
+                double totalError = cost * sigDir ;
+                //Update weights between output layer and hidden layer
+                for (int j = 0; j < thisPlayer.wOut.Length; j++)
+                {
+                    //TODO: Make sure we calculate the cost for the next layer correctly.
+                    //Cost at the last hidden layer is totError * the current weight
+                    hiddenCosts[j] = totalError * thisPlayer.wOut[j];
+                    //Weight is updated by the totError * the ourput at the hidden layer * alpha(learning rate)
+                    thisPlayer.wOut[j] += alpha * totalError * hiddenLayers[i][numbHiddenLayers - 1, j];
                 }
-                thisPlayer.biasOut -= (alpha * cost * partialDir);
+                //Bias is updated by alpha * totalError (* 1 as bias unit is 1 but that is pointless to calculate)
+                thisPlayer.biasOut += (alpha * totalError);
 
                 //Updates weights between hiddens layer and input layer
                 //For every hidden layer
                 for (int k = numbHiddenLayers-1; k >= 0; k--)
                 {
+                    //Create a new list of hidden layers
                     double[] nextHiddenCosts = new double[lengthOfInput];
                     //And for every node in that layer
                     for (int l = 0; l < lengthOfInput; l++)
                     {
-                        //TODO:Work out what the hell hiddenCosts[l] should be :(
-                        //Work out it's cose, the weight value
+                        //Work out it's cost, the weight value
                         double hCost = hiddenCosts[l];
+                        //This is the node in the hidden layer whose weights we are updating
+                        //(the weights between this node and all nodes in the prev layer)
                         double hiddenLayerKL = hiddenLayers[i][k,l];
-                        double partialDirH = (1 - hiddenLayerKL * hiddenLayerKL) * hCost;
-
+                        //Calcualte the dir of the 'output' (the node in the righthand layer)
+                        double tanHDir = 1 - hiddenLayerKL * hiddenLayerKL;
+                        //tot error = cost * sigdir
+                        double totalErrorH =  tanHDir * hCost;
+                        //For ever node in the preceding layer (or, input layer)
                         for (int m = 0; m < lengthOfInput; m++)
                         {
-                            nextHiddenCosts[m] += partialDirH * thisPlayer.wH[k,m * lengthOfInput + l];
-
-                            if(k == 0) thisPlayer.wH[k,m * lengthOfInput + l] -= (alpha * partialDirH * inputs[i][l]);
-                            else thisPlayer.wH[k,m * lengthOfInput + l] -= (alpha * hCost * partialDirH * hiddenLayers[i][k-1,l]);
-                            //hiddencost m????
-                            //WHAT IS COST? IS it cost or hCost?
-                            nextHiddenCosts[m] += (1 - hiddenLayerKL * hiddenLayerKL) * cost * thisPlayer.wH[k,m * lengthOfInput + l];
+                            //Cost at the last hidden layer is totErrorH * the current weight
+                            nextHiddenCosts[m] += totalErrorH * thisPlayer.wH[k,m * lengthOfInput + l];
+                            //if k = 0 we are on the last layer so we update with respect to the input
+                            if(k == 0) thisPlayer.wH[k,m * lengthOfInput + l] += alpha * totalErrorH * inputs[i][m];
+                            //Otherwise we use the value of the previous layer
+                            else thisPlayer.wH[k,m * lengthOfInput + l] += alpha * hCost * totalErrorH * hiddenLayers[i][k-1,m];
+                            //TODO: Make sure we calculate the cost for the next layer correctly.
+                            nextHiddenCosts[m] += totalErrorH * thisPlayer.wH[k,m * lengthOfInput + l];
                         }
-                        //TODO: Check this works...
                         //Once we are done updated all of the weights assoiated with this node we update the
                         //cost to the relate to the node (so we can work backwards)
-                        thisPlayer.biasH[k,l] -= (alpha * hCost * partialDirH);
+                        thisPlayer.biasH[k,l] += (alpha * hCost * totalErrorH);
                     }
                     hiddenCosts = nextHiddenCosts;
                 }
@@ -287,7 +332,9 @@ namespace Monte
                         else thisElement += hiddenLayers[i-1,j]*thisPlayer.wH[i, j*lengthOfInput+k];
                     }
                     thisElement += thisPlayer.biasH[i,j];
-                    hiddenLayers[i,j] = tanH(thisElement);
+                    //hiddenLayers[i,j] = tanH(thisElement);
+                    hiddenLayers[i,j] = thisElement;
+
                 }
             }
             return hiddenLayers;
@@ -360,11 +407,11 @@ namespace Monte
                 biasOut = 0.0;
                 for(int i = 0; i < _numbHiddenLayers; i++)
                 {
-                    for (int j = 0; j < _lengthOfInput * _lengthOfInput; j++){ wH[i,j] = randGen.NextDouble();}
-                    for (int j = 0; j < _lengthOfInput; j++){ biasH[i,j] = randGen.NextDouble();}
+                    for (int j = 0; j < _lengthOfInput * _lengthOfInput; j++){ wH[i,j] = (randGen.NextDouble()*2)-1;}
+                    for (int j = 0; j < _lengthOfInput; j++){ biasH[i,j] = (randGen.NextDouble()*2)-1;}
                 }
-                for (int i = 0; i < _lengthOfInput; i++){ wOut[i] = randGen.NextDouble();}
-                biasOut = randGen.NextDouble();
+                for (int i = 0; i < _lengthOfInput; i++){ wOut[i] = (randGen.NextDouble()*2)-1;}
+                biasOut = (randGen.NextDouble()*2)-1;
             }
 
             public void writeToFile(StreamWriter writer)

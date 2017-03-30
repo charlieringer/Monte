@@ -181,24 +181,6 @@ namespace Monte
 			}
 		}
 
-		List<AIState> quickSort(List<AIState> startList)
-		{
-			if (startList.Count == 0) {
-				return null;
-			}
-			foreach(AIState state in startList)
-				state.stateScore = (float)model.evaluate(state.stateRep, state.playerIndex);
-			AIState pivot = startList [0];
-
-			List<AIState> left = null;
-			List<AIState> right = null;
-			List<AIState> returnList = new List<AIState>();
-			returnList.AddRange (left);
-			returnList.Add (pivot);
-			returnList.AddRange (right);
-			return returnList;
-		}
-
 		private List<AIState> prune(List<AIState> list)
 		{
 			//Sort the list
@@ -206,63 +188,11 @@ namespace Monte
 		    {
 		        list[i].stateScore = (float)model.evaluate(list[i].stateRep, list[i].playerIndex);
 		    }
-			list = mergeSort(list);
+			list = AIState.mergeSort(list);
 
 			int numbNodesToRemove = (int)Math.Floor(list.Count * pruningFactor);
 			list.RemoveRange(0, numbNodesToRemove);
 			return list;
-		}
-
-		private static List<AIState> mergeSort(List<AIState> startList)
-		{
-			if (startList.Count <= 1)
-			{
-				return startList;
-			}
-
-			int pivot = startList.Count / 2;
-			List<AIState> left = new List<AIState>();
-			List<AIState> right = new List<AIState>();
-
-			for (int i = 0; i < pivot; i++)
-				left.Add(startList[i]);
-
-			for (int i = pivot; i < startList.Count; i++)
-				right.Add(startList[i]);
-
-			left = mergeSort(left); 
-			right = mergeSort(right);
-
-			return merge(left, right);
-		}
-
-		private static List<AIState> merge(List<AIState> left, List<AIState> right)
-		{
-			List<AIState> returnList = new List<AIState>();
-			while (left.Count > 0 && right.Count > 0 )
-			{
-				if (left[0].stateScore < right[0].stateScore)
-				{
-					returnList.Add(left[0]);
-					left.RemoveAt(0);
-				}
-				else
-				{
-					returnList.Add(right[0]);
-					right.RemoveAt(0);
-				}
-			}
-//			if (left.Count > 0) {
-//				foreach(AIState state in left)
-//					returnList.Add(state);
-//			}
-			for (int i = 0; i < left.Count; i++) {
-				returnList.Add (left [i]);  
-			}			
-			for (int i = 0; i < right.Count; i++) {
-				returnList.Add (right [i]); 
-			}
-			return returnList;
 		}
 	}
 }

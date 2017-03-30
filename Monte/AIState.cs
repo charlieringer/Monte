@@ -103,5 +103,53 @@ namespace Monte
 		public abstract List<AIState> generateChildren ();
 		//For checking is a node is terminal (and which player won)ss
 		public abstract int getWinner ();
+
+	    public static List<AIState> mergeSort(List<AIState> startList)
+	    {
+	        if (startList.Count <= 1)
+	        {
+	            return startList;
+	        }
+
+	        int pivot = startList.Count / 2;
+	        List<AIState> left = new List<AIState>();
+	        List<AIState> right = new List<AIState>();
+
+	        for (int i = 0; i < pivot; i++)
+	            left.Add(startList[i]);
+
+	        for (int i = pivot; i < startList.Count; i++)
+	            right.Add(startList[i]);
+
+	        left = mergeSort(left);
+	        right = mergeSort(right);
+
+	        return merge(left, right);
+	    }
+
+	    private static List<AIState> merge(List<AIState> left, List<AIState> right)
+	    {
+	        List<AIState> returnList = new List<AIState>();
+	        while (left.Count > 0 && right.Count > 0 )
+	        {
+	            if (left[0].stateScore < right[0].stateScore)
+	            {
+	                returnList.Add(left[0]);
+	                left.RemoveAt(0);
+	            }
+	            else
+	            {
+	                returnList.Add(right[0]);
+	                right.RemoveAt(0);
+	            }
+	        }
+	        for (int i = 0; i < left.Count; i++) {
+	            returnList.Add (left [i]);
+	        }
+	        for (int i = 0; i < right.Count; i++) {
+	            returnList.Add (right [i]);
+	        }
+	        return returnList;
+	    }
 	}
 }
