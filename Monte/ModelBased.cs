@@ -22,8 +22,9 @@ namespace Monte
 		{
 			List<AIState> children = initalState.generateChildren();
 			AIState best = null;
-			float? bestScore = null;
-		    float total = 0.0f;
+			double? bestScore = null;
+		    double total = 0.0f;
+		    bool moveSelected = false;
 			foreach(AIState child in children)
 			{
 				child.stateScore = (float)model.evaluate(child.stateRep, child.playerIndex);
@@ -31,8 +32,10 @@ namespace Monte
 				if (bestScore == null ||child.stateScore > bestScore) {
 					best = child;
 					bestScore = child.stateScore;
+				    moveSelected = true;
 				}
 			}
+		    if (!moveSelected) best = children[0];
 			next = best;
 			done = true;
 		}

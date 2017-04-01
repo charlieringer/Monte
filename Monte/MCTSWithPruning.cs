@@ -136,13 +136,13 @@ namespace Monte
 					rolloutStart.addDraw ();
 					return;
 				}
-				float totalScore = 0.0f;
+				double totalScore = 0.0f;
 
-				List<float> scores = new List<float> ();
+				List<double> scores = new List<double> ();
 				foreach(AIState child in children)
 				{
 					if (child.stateScore == null) {
-						child.stateScore = (float)model.evaluate(child.stateRep, child.playerIndex);
+						child.stateScore = model.evaluate(child.stateRep, child.playerIndex);
 					}
 					totalScore += child.stateScore.Value;
 					scores.Add (child.stateScore.Value);
@@ -186,7 +186,7 @@ namespace Monte
 			//Sort the list
 		    for (int i = 0; i < list.Count; i++)
 		    {
-		        list[i].stateScore = (float)model.evaluate(list[i].stateRep, list[i].playerIndex);
+		        list[i].stateScore = model.evaluate(list[i].stateRep, list[i].playerIndex);
 		    }
 			list = AIState.mergeSort(list);
 

@@ -120,19 +120,19 @@ namespace Monte
 					rolloutStart.addDraw ();
 					return;
 				}
-				float totalScore = 0.0f;
+				double totalScore = 0.0f;
 
-				List<float> scores = new List<float> ();
+				List<double> scores = new List<double> ();
 				foreach(AIState child in children)
 				{
 					if (child.stateScore == null) {
-						child.stateScore = (float)model.evaluate(child.stateRep, child.playerIndex);
+						child.stateScore = model.evaluate(child.stateRep, child.playerIndex);
 					}
 					totalScore += child.stateScore.Value;
 					scores.Add (child.stateScore.Value);
 				}
 				double randomPoint = randGen.NextDouble() * totalScore;
-				float runningTotal = 0.0f;
+				double runningTotal = 0.0f;
 				int index = 0;
 				for (int i = 0; i < scores.Count; i++) {
 					runningTotal += scores [i];

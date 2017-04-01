@@ -25,11 +25,9 @@ namespace Monte
 		//Interger representation of the game state
 		public int[] stateRep { get; set; }
 		//The score which is derived from the learner and represents the score for the state
-		public float? stateScore { get; set; }
+		public double? stateScore { get; set; }
 
-	    public AIState()
-	    {
-	    }
+	    public AIState(){}
 
 	    public AIState(int pIndex, AIState _parent, int _depth)
 		{
