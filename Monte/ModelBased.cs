@@ -21,22 +21,18 @@ namespace Monte
 	    protected override void mainAlgorithm(AIState initalState)
 		{
 			List<AIState> children = initalState.generateChildren();
-			AIState best = null;
-			double? bestScore = null;
-		    double total = 0.0f;
-		    bool moveSelected = false;
-			foreach(AIState child in children)
-			{
-				child.stateScore = (float)model.evaluate(child.stateRep, child.playerIndex);
-			    total += child.stateScore.Value;
-				if (bestScore == null ||child.stateScore > bestScore) {
-					best = child;
-					bestScore = child.stateScore;
-				    moveSelected = true;
-				}
-			}
-		    if (!moveSelected) best = children[0];
-			next = best;
+		    for (int i = 0; i < children.Count; i++)
+		    {
+		        if (children[i].getWinner() == initalState.playerIndex)
+		        {
+		            next = children[i];
+		            done = true;
+		            return;
+		        }
+		        children[i].stateScore = model.evaluate(children[i]);
+		    }
+		    List<AIState> sortedchildren = AIState.mergeSort(children);
+			next = sortedchildren[0];
 			done = true;
 		}
 	}

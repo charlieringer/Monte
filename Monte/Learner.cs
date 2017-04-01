@@ -194,17 +194,18 @@ namespace Monte
                 bool childSelected = false;
                 int selectedChild = 0;
 
-                for (int i = children.Count; i == 0; i--)
+                for (int i = children.Count-1; i >= 0; i--)
                 {
                     Double randNum = randGen.NextDouble();
-                    if (randNum < children[i].stateScore || randNum > 0.8)
+                    if (randNum < children[i].stateScore || randNum > 0.8 || children[i].getWinner() == currentState.playerIndex)
                     {
                         selectedChild = i;
                         childSelected = true;
                         break;
                     }
                 }
-                if (!childSelected) selectedChild = children.Count - 1;
+                if (!childSelected)
+                    selectedChild = 0;
 
                 int endResult = children[selectedChild].getWinner();
                 if(endResult >= 0)
@@ -305,6 +306,11 @@ namespace Monte
             return totalCost;
         }
 
+        public double evaluate(AIState state)
+        {
+            return evaluate(state.stateRep, state.playerIndex);
+        }
+
         public double evaluate(int[] stateBoard, int playerIndx)
         {
             int[] processedBoard = preprocess(stateBoard);
@@ -353,10 +359,10 @@ namespace Monte
         {
             int range = rawInput[rawInput.Length - 1];
             int[] processedInput = new int[rawInput.Length * range];
-            int currentType = 0;
+            int currentType = 1;
             for (int i = 0; i < processedInput.Length; i++)
             {
-                if(i%rawInput.Length == 0)
+                if(i%rawInput.Length == 0 && i != 0)
                 {
                     currentType++;
                     continue;
