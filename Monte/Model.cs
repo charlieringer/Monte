@@ -279,7 +279,7 @@ namespace Monte
                         //Calcualte the dir of the 'output' (the node in the righthand layer)
                         double tanHDir = 1 - hiddenLayerKL * hiddenLayerKL;
                         //tot error = cost * sigdir
-                        double grt0HCost = ( 2*Math.Abs(0.5-hiddenLayerKL)) * alpha * 0.05;;
+                        double grt0HCost = -hiddenLayerKL;
                         double totalErrorH = hCost* tanHDir;
                         //For ever node in the preceding layer (or, input layer)
                         for (int m = 0; m < lengthOfInput; m++)
@@ -289,17 +289,17 @@ namespace Monte
                             //if k = 0 we are on the last layer so we update with respect to the input
                             if (k == 0)
                                 thisPlayer.wH[k, m * lengthOfInput + l] +=
-                                    alpha * totalErrorH * inputs[i][m];// + (hiddenLayerKL > 0 ? grt0HCost : -grt0HCost);
+                                    alpha * totalErrorH * inputs[i][m] + grt0HCost;
                             //Otherwise we use the value of the previous layer
                             else
                                 thisPlayer.wH[k, m * lengthOfInput + l] +=
-                                    alpha * hCost * totalErrorH * hiddenLayers[i][k - 1, m];// + (hiddenLayerKL > 0 ? grt0HCost : -grt0HCost);
+                                    alpha * hCost * totalErrorH * hiddenLayers[i][k - 1, m] + grt0HCost;
                             //TODO: Make sure we calculate the cost for the next layer correctly.
                             nextHiddenCosts[m] += totalErrorH * thisPlayer.wH[k,m * lengthOfInput + l];
                         }
                         //Once we are done updated all of the weights assoiated with this node we update the
                         //cost to the relate to the node (so we can work backwards)
-                        thisPlayer.biasH[k, l] += (alpha * hCost * totalErrorH);// + (hiddenLayerKL > 0 ? grt0HCost : -grt0HCost);
+                        thisPlayer.biasH[k, l] += (alpha * hCost * totalErrorH) + grt0HCost;
                     }
                     hiddenCosts = nextHiddenCosts;
                 }
