@@ -6,7 +6,7 @@ using System.Xml;
 
 namespace Monte
 {
-    public class Learner
+    public class Model
     {
         private Network player0Network;
         private Network player1Network;
@@ -18,10 +18,10 @@ namespace Monte
         public delegate AIState StateCreator();
 
         //TODO:This below is a poor way to do this. Think of a better way to stop signature classes in the constructor
-        public Learner(){ parseXML("Assets/Monte/DefaultSettings.xml"); }
-        public Learner(string settingsFile, int flag){ parseXML(settingsFile); }
-        public Learner (string modelfile) : this(modelfile, "Assets/Monte/DefaultSettings.xml") {}
-        public Learner(string modelfile, string settingsFile)
+        public Model(){ parseXML("Assets/Monte/DefaultSettings.xml"); }
+        public Model(string settingsFile, int flag){ parseXML(settingsFile); }
+        public Model (string modelfile) : this(modelfile, "Assets/Monte/DefaultSettings.xml") {}
+        public Model(string modelfile, string settingsFile)
         {
             parseXML(settingsFile);
             parseModel(modelfile);
@@ -116,9 +116,9 @@ namespace Monte
                     Console.WriteLine("Last Epoch");
                 }
                 //Play n games and return the total cost for this episode (or epoch)
-                double totalCost = trainingEpisode(sc, gamesPerEpisode);
+                double avgCost = trainingEpisode(sc, gamesPerEpisode);
                 //Output this cost (so we can see if our cost is reducing
-                Console.WriteLine("Training Episode " + (i+1) + " of " + episodes +" complete. Total cost: " +totalCost);
+                Console.WriteLine("Training Episode " + (i+1) + " of " + episodes +" complete. Avg cost: " + avgCost);
             }
 
             //Once done we output it to a file which is the time it was made
@@ -153,8 +153,8 @@ namespace Monte
                 playForward(stateCreator, totalInputs, totalHiddenLayers, totalResults, totalRewards, playerIndxs);
             }
             //Once we have compelted an epoch we now backprop.
-            double totalCost = backpropagate(totalInputs,totalHiddenLayers,totalResults,totalRewards, playerIndxs);
-            return totalCost;
+            double avgCost = backpropagate(totalInputs,totalHiddenLayers,totalResults,totalRewards, playerIndxs);
+            return avgCost;
         }
 
         //Simulates a game
@@ -194,7 +194,7 @@ namespace Monte
                 bool childSelected = false;
                 int selectedChild = 0;
 
-                for (int i = children.Count-1; i >= 0; i--)
+                for (int i = 0; i < children.Count; i++)
                 {
                     Double randNum = randGen.NextDouble();
                     if (randNum < children[i].stateScore || randNum > 0.8 || children[i].getWinner() == currentState.playerIndex)
@@ -248,6 +248,7 @@ namespace Monte
                 double totalError = cost * sigDir;
 
                 double grt0Cost =( 2*Math.Abs(0.5-output[i])) * alpha * 0.05;
+                if (output[i] < 0.5) grt0Cost = -grt0Cost;
                 //Update weights between output layer and hidden layer
                 for (int j = 0; j < thisPlayer.wOut.Length; j++)
                 {
@@ -303,7 +304,7 @@ namespace Monte
                     hiddenCosts = nextHiddenCosts;
                 }
             }
-            return totalCost;
+            return totalCost/inputs.Count;
         }
 
         public double evaluate(AIState state)
@@ -358,11 +359,11 @@ namespace Monte
         private static int[] preprocess(int[] rawInput)
         {
             int range = rawInput[rawInput.Length - 1];
-            int[] processedInput = new int[rawInput.Length * range];
+            int[] processedInput = new int[(rawInput.Length-1) * range];
             int currentType = 1;
             for (int i = 0; i < processedInput.Length; i++)
             {
-                if(i%rawInput.Length == 0 && i != 0)
+                if(i%(rawInput.Length-1) == 0 && i != 0)
                 {
                     currentType++;
                     continue;

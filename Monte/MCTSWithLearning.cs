@@ -7,21 +7,21 @@ namespace Monte
 {
 	public class MCTSWithLearning : MCTSMasterAgent
 	{
-		private Learner model;
+		private Model model;
 
-		public MCTSWithLearning (double _thinkingTime, double _exploreWeight, int _maxRollout, Learner _model): base(_thinkingTime, _exploreWeight, _maxRollout)
+		public MCTSWithLearning (double _thinkingTime, double _exploreWeight, int _maxRollout, Model _model): base(_thinkingTime, _exploreWeight, _maxRollout)
 		{ 
 			model = _model;
 		}
 
 		public MCTSWithLearning (String modelName) : base ()
 		{
-			model = new Learner (modelName);
+			model = new Model (modelName);
 		}
 			
 		public MCTSWithLearning (String modelName, String settingsFile) : base (settingsFile)
 		{
-			model = new Learner (modelName);
+			model = new Model (modelName);
 		}
 			
 

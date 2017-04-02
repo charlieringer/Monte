@@ -39,7 +39,7 @@
     <Compile Include="MCTSWithLearning.cs" />
     <Compile Include="AIAgent.cs" />
     <Compile Include="ModelBased.cs" />
-    <Compile Include="Learner.cs" />
+    <Compile Include="Model.cs" />
     <Compile Include="RandomAgent.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

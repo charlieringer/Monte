@@ -6,16 +6,16 @@ namespace Monte
 {
 	public class ModelBased : AIAgent
 	{
-		Learner model;
+		Model model;
 
-		public ModelBased(Learner _model)
+		public ModelBased(Model _model)
 		{
 			model = _model;
 		}
 
 		public ModelBased (string modelfile)
 		{
-			model = new Learner(modelfile);
+			model = new Model(modelfile);
 		}
 
 	    protected override void mainAlgorithm(AIState initalState)

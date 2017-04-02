@@ -7,10 +7,10 @@ namespace Monte
 {
 	public class MCTSWithPruning : MCTSMasterAgent
 	{
-		private Learner model;
+		private Model model;
 		private double pruningFactor;
 
-		public MCTSWithPruning (double _thinkingTime, double _exploreWeight, int _maxRollout, Learner _model, double _pruningFactor)
+		public MCTSWithPruning (double _thinkingTime, double _exploreWeight, int _maxRollout, Model _model, double _pruningFactor)
 			: base( _thinkingTime, _exploreWeight, _maxRollout)
 		{
 			model = _model;
@@ -20,7 +20,7 @@ namespace Monte
 
 		public MCTSWithPruning (String modelName)
 		{
-			model = new Learner (modelName);
+			model = new Model (modelName);
 			XmlDocument settings = new XmlDocument ();
 			settings.Load("Monte/DefaultSettings.xml"); 
 
@@ -31,7 +31,7 @@ namespace Monte
 
 		public MCTSWithPruning (String modelName, String settingsFile) : base (settingsFile)
 		{
-			model = new Learner (modelName);
+			model = new Model (modelName);
 			XmlDocument settings = new XmlDocument ();
 			settings.Load("settingsFile"); 
 
