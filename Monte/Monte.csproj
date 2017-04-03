@@ -38,7 +38,7 @@
     <Compile Include="MCTSWithPruning.cs" />
     <Compile Include="MCTSWithLearning.cs" />
     <Compile Include="AIAgent.cs" />
-    <Compile Include="ModelBased.cs" />
+    <Compile Include="ModelBasedAgent.cs" />
     <Compile Include="Model.cs" />
     <Compile Include="RandomAgent.cs" />
   </ItemGroup>

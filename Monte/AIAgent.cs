@@ -77,9 +77,22 @@ namespace Monte
 		public void run(AIState initalState)
 		{
 			//Make a new AI thread with this state
-			aiThread = new Thread (new ThreadStart (() => mainAlgorithm(initalState)));
+			aiThread = new Thread (() => mainAlgorithm(initalState));
 			//And start it.
-			aiThread.Start ();
+		    bool aiHasStarted = false;
+		    while (!aiHasStarted)
+		    {
+		        try
+		        {
+		            aiThread.Start();
+		            aiHasStarted = true;
+		        }
+		        catch
+		        {
+		            Console.WriteLine("Error: Failed to create thread. Retrying.");
+		        }
+		    }
+
 			//Set started to true
 			started = true;
 		}

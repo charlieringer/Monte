@@ -191,7 +191,7 @@ namespace Monte
 			list = AIState.mergeSort(list);
 
 			int numbNodesToRemove = (int)Math.Floor(list.Count * pruningFactor);
-			list.RemoveRange(list.Count-numbNodesToRemove-1, numbNodesToRemove);
+			list.RemoveRange(0, numbNodesToRemove);
 			return list;
 		}
 	}

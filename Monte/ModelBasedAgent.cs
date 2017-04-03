@@ -4,16 +4,16 @@ using System.Collections.Generic;
 
 namespace Monte
 {
-	public class ModelBased : AIAgent
+	public class ModelBasedAgent : AIAgent
 	{
 		Model model;
 
-		public ModelBased(Model _model)
+		public ModelBasedAgent(Model _model)
 		{
 			model = _model;
 		}
 
-		public ModelBased (string modelfile)
+		public ModelBasedAgent (string modelfile)
 		{
 			model = new Model(modelfile);
 		}
@@ -32,7 +32,7 @@ namespace Monte
 		        children[i].stateScore = model.evaluate(children[i]);
 		    }
 		    List<AIState> sortedchildren = AIState.mergeSort(children);
-			next = sortedchildren[0];
+			next = sortedchildren[sortedchildren.Count-1];
 			done = true;
 		}
 	}

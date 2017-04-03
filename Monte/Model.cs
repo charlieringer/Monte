@@ -194,7 +194,7 @@ namespace Monte
                 bool childSelected = false;
                 int selectedChild = 0;
 
-                for (int i = 0; i < children.Count; i++)
+                for (int i = children.Count-1; i >= 0; i--)
                 {
                     Double randNum = randGen.NextDouble();
                     if (randNum < children[i].stateScore || randNum > 0.8 || children[i].getWinner() == currentState.playerIndex)
