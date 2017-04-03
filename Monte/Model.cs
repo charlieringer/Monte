@@ -44,7 +44,7 @@ namespace Monte
                 alpha = float.Parse(node.Attributes.GetNamedItem("Alpha").Value);
                 maxForwardIters = int.Parse(node.Attributes.GetNamedItem("MaxForwardItters").Value);
                 numbHiddenLayers = int.Parse(node.Attributes.GetNamedItem("NumbHiddenLayers").Value);
-                normVal = double.Parse(node.Attributes.GetNamedItem("Normalisation").Value)
+                normVal = double.Parse(node.Attributes.GetNamedItem("Normalisation").Value);
             }
             catch
             {
@@ -63,12 +63,10 @@ namespace Monte
             try
             {
                 string[] lines = File.ReadAllLines(modelfile);
-
-                player0Network = new Network(0);
-                player1Network = new Network(1);
-
                 lengthOfInput = int.Parse(lines[0]);
                 numbHiddenLayers = int.Parse(lines[1]);
+                player0Network = new Network(lengthOfInput, numbHiddenLayers, 0);
+                player1Network = new Network(lengthOfInput, numbHiddenLayers, 1);
                 player0Network.wH = new double[numbHiddenLayers, lengthOfInput * lengthOfInput];
                 player1Network.wH = new double[numbHiddenLayers, lengthOfInput * lengthOfInput];
 
@@ -190,7 +188,7 @@ namespace Monte
                 }
 
                 //Evaluate all moves
-                foreach(AIState child in children) child.stateScore = evaluate(child.stateRep, child.playerIndex);
+                foreach(AIState child in children) child.stateScore = evaluate(child);
                 //and then sort them
                 children = AIState.mergeSort(children);
 
@@ -250,7 +248,7 @@ namespace Monte
                 //tot error = cost * sigdir
                 double totalError = cost * sigDir;
 
-                double grt0Cost =( 2*Math.Abs(0.5-output[i])) * alpha * 0.05;
+                double grt0Cost =( 2*Math.Abs(0.5-output[i])) * alpha * normVal;
                 if (output[i] < 0.5) grt0Cost = -grt0Cost;
                 //Update weights between output layer and hidden layer
                 for (int j = 0; j < thisPlayer.wOut.Length; j++)
@@ -282,7 +280,7 @@ namespace Monte
                         //Calcualte the dir of the 'output' (the node in the righthand layer)
                         double tanHDir = 1 - hiddenLayerKL * hiddenLayerKL;
                         //tot error = cost * sigdir
-                        double grt0HCost = -hiddenLayerKL;
+                        double grt0HCost = -hiddenLayerKL * alpha * normVal;
                         double totalErrorH = hCost* tanHDir;
                         //For ever node in the preceding layer (or, input layer)
                         for (int m = 0; m < lengthOfInput; m++)
@@ -312,14 +310,9 @@ namespace Monte
 
         public double evaluate(AIState state)
         {
-            return evaluate(state.stateRep, state.playerIndex);
-        }
-
-        public double evaluate(int[] stateBoard, int playerIndx)
-        {
-            int[] processedBoard = preprocess(stateBoard);
-            double[,] hiddenLayer = getHiddenLayers(processedBoard, playerIndx);
-            double score = getRawScore(hiddenLayer, playerIndx);
+            int[] processedBoard = preprocess(state.stateRep);
+            double[,] hiddenLayer = getHiddenLayers(processedBoard, state.playerIndex);
+            double score = getRawScore(hiddenLayer, state.playerIndex);
             return sig(score);
         }
 
@@ -494,6 +487,11 @@ namespace Monte
                 }
                 biasOut = double.Parse(lines[counter]);
                 return ++counter;
+            }
+
+            public void setHiddenLayers(int layers)
+            {
+                numbHiddenLayers = layers;
             }
         }
     }

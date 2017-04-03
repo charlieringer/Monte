@@ -7,25 +7,33 @@ namespace Monte
 {
 	public class MCTSWithPruning : MCTSMasterAgent
 	{
-		private Model model;
-		private double pruningFactor;
+		private readonly Model model;
+		private readonly double pruningFactor;
 
-		public MCTSWithPruning (double _thinkingTime, double _exploreWeight, int _maxRollout, Model _model, double _pruningFactor)
-			: base( _thinkingTime, _exploreWeight, _maxRollout)
+		public MCTSWithPruning (double _thinkingTime, double _exploreWeight, int _maxRollout, Model _model, double _pruningFactor, double _drawScore)
+			: base( _thinkingTime, _exploreWeight, _maxRollout, _drawScore)
 		{
 			model = _model;
 			pruningFactor = _pruningFactor;
 		}
 
 
-		public MCTSWithPruning (String modelName)
+		public MCTSWithPruning (Model _model)
 		{
-			model = new Model (modelName);
-			XmlDocument settings = new XmlDocument ();
-			settings.Load("Monte/DefaultSettings.xml"); 
+			model = _model;
+		    try
+		    {
+		        XmlDocument settings = new XmlDocument();
+		        settings.Load("Assets/Monte/DefaultSettings.xml");
+		        XmlNode node = settings.SelectSingleNode("descendant::PruningSettings");
+		        pruningFactor = Double.Parse(node.Attributes.GetNamedItem("PruneWorsePercent").Value);
+		    }
+		    catch
+		    {
+		        pruningFactor = 0.2;
+		        Console.WriteLine("Error reading settings file. Default settings values used (PruneWorstPercent = 0.2).");
+		    }
 
-			XmlNode node = settings.SelectSingleNode("descendant::PruningSettings");
-			pruningFactor = Double.Parse(node.Attributes.GetNamedItem("PruneWorsePercent").Value);
 
 		}
 
@@ -118,78 +126,75 @@ namespace Monte
 			done = true;
 		}
 
-		//Rollout function (plays random moves till it hits a termination)
-		protected override void rollout(AIState rolloutStart)
-		{
-			bool terminalStateFound = false;
-			//Get the children
-			List<AIState> children = rolloutStart.generateChildren();
+        //Rollout function (plays random moves till it hits a termination)
+	    protected override void rollout(AIState rolloutStart)
+	    {
+	        bool terminalStateFound = false;
+	        //Get the children
+	        List<AIState> children = rolloutStart.generateChildren();
 
-			int count = 0;
-			while(!terminalStateFound)
-			{
-				//Loop through till a terminal state is found
-				count++;
-				if (count >= maxRollout || children.Count == 0) {
-					//or maxroll out is hit
+	        int count = 0;
+	        while(!terminalStateFound)
+	        {
+	            //Loop through till a terminal state is found
+	            count++;
+	            //If max roll out is hit or no childern were generated
+	            if (count >= maxRollout || children.Count == 0) {
+	                //record a draw
+	                rolloutStart.addDraw (drawScore);
+	                return;
+	            }
 
-					rolloutStart.addDraw ();
-					return;
-				}
-				double totalScore = 0.0f;
+	            double totalScore = 0.0f;
+	            List<double> scores = new List<double> ();
 
-				List<double> scores = new List<double> ();
-				foreach(AIState child in children)
-				{
-					if (child.stateScore == null) {
-						child.stateScore = model.evaluate(child.stateRep, child.playerIndex);
-					}
-					totalScore += child.stateScore.Value;
-					scores.Add (child.stateScore.Value);
-				}
-				double randomPoint = randGen.NextDouble() * totalScore;
-				double runningTotal = 0.0f;
-				int index = 0;
-				for (int i = 0; i < scores.Count; i++) {
-					runningTotal += scores [i];
-					if (runningTotal >= randomPoint) {
-						index = i;
-						break;
-					}
-				}
-				//and see if that node is terminal
-				int endResult = children[index].getWinner ();
-				if(endResult >= 0)
-				{
-					terminalStateFound = true;
-					//If it is a win add a win
-					if(endResult == rolloutStart.playerIndex) rolloutStart.addWin();
-					//Else add a loss
-					else rolloutStart.addLoss();
-				} else {
-					//Otherwise select that nodes as the childern and continue
-					children = children [index].generateChildren();
-					if (children.Count == 0) {
-						break;
-					}
-				}
-			}
-			//Reset the children as these are not 'real' children but just ones for the roll out. 
-			foreach( AIState child in rolloutStart.children)
-			{
-				child.children = new List<AIState>();
-			}
-		}
+	            foreach(AIState child in children)
+	            {
+	                if (child.stateScore == null) {
+	                    child.stateScore = model.evaluate(child);
+	                }
+	                totalScore += child.stateScore.Value;
+	                scores.Add (child.stateScore.Value);
+	            }
+	            double randomPoint = randGen.NextDouble() * totalScore;
+	            double runningTotal = 0.0f;
+	            int index = 0;
+	            for (int i = 0; i < scores.Count; i++) {
+	                runningTotal += scores [i];
+	                if (runningTotal >= randomPoint) {
+	                    index = i;
+	                    break;
+	                }
+	            }
+	            //and see if that node is terminal
+	            int endResult = children[index].getWinner ();
+	            if(endResult >= 0)
+	            {
+	                terminalStateFound = true;
+	                //If it is a win add a win
+	                if(endResult == rolloutStart.playerIndex) rolloutStart.addWin();
+	                //Else add a loss
+	                else rolloutStart.addLoss();
+	            } else {
+	                //Otherwise select that nodes as the childern and continue
+	                children = children [index].generateChildren();
+	                if (children.Count == 0) {
+	                    break;
+	                }
+	            }
+	        }
+	        //Reset the children as these are not 'real' children but just ones for the roll out.
+	        foreach( AIState child in rolloutStart.children)
+	        {
+	            child.children = new List<AIState>();
+	        }
+	    }
 
 		private List<AIState> prune(List<AIState> list)
 		{
 			//Sort the list
-		    for (int i = 0; i < list.Count; i++)
-		    {
-		        list[i].stateScore = model.evaluate(list[i].stateRep, list[i].playerIndex);
-		    }
+		    foreach (AIState state in list) state.stateScore = model.evaluate(state);
 			list = AIState.mergeSort(list);
-
 			int numbNodesToRemove = (int)Math.Floor(list.Count * pruningFactor);
 			list.RemoveRange(0, numbNodesToRemove);
 			return list;

@@ -5,36 +5,43 @@ namespace Monte
 {
 	public class MCTSSimpleAgent : MCTSMasterAgent
 	{
-		public MCTSSimpleAgent(): base(){}
+		public MCTSSimpleAgent(){}
 		public MCTSSimpleAgent(string file):base(file){}
-		public MCTSSimpleAgent (double _thinkingTime, double _exploreWeight, int _maxRollout) : base(_thinkingTime, _exploreWeight, _maxRollout){}
+		public MCTSSimpleAgent (double _thinkingTime, double _exploreWeight, int _maxRollout, double _drawScore) : base(_thinkingTime, _exploreWeight, _maxRollout, _drawScore){}
 
 		//Main MCTS algortim
-	    //TODO: Handle games sttates that can not generate children.
 		protected override void mainAlgorithm(AIState initalState)
 		{
 			//Make the intial children
 			initalState.generateChildren ();
+		    //if no childern are generated
+		    if (initalState.children.Count == 0)
+		    {
+		        //Report this error and return.
+		        Console.WriteLine("Error: State supplied has no childern.");
+		        next = null;
+		        done = true;
+		        return;
+		    }
+
 			//Get the start time
-			double startTime = (DateTime.Now.Ticks)/10000000;
+			double startTime = DateTime.Now.Ticks;
 			double latestTick = startTime;
 			while (latestTick-startTime < thinkingTime) {
-			    //Console.WriteLine("Time elpased: " + (latestTick-startTime));
 				//Update the latest tick
-				latestTick = (DateTime.Now.Ticks)/10000000;
-
+				latestTick = DateTime.Now.Ticks;
 				//Once done set the best child to this
 				AIState bestNode = initalState;
 				//And loop through it's child
-			    int count = 0;
+			    //int count = 0;
 				while(bestNode.children.Count > 0)
 				{
-				    count++;
-				    if (count > 100)
-				    {
-				        Console.WriteLine("Problem looping through all children.");
-				        break;
-				    }
+//				    count++;
+//				    if (count > 100)
+//				    {
+//				        Console.WriteLine("Problem looping through all children.");
+//				        break;
+//				    }
 
 					//Set the scores as a base line
 				    double bestScore = -1;
@@ -65,8 +72,7 @@ namespace Monte
 				rollout(bestNode);
 			}
 
-			//Once we get to this point we have worked out the best move
-			//So just need to return it
+			//Once we get to this point we have worked out the best move so just need to return it
 			int mostGames = -1;
 			int bestMove = -1;
 			//Loop through all childern
@@ -80,15 +86,7 @@ namespace Monte
 					bestMove = i;
 				}
 			}
-			//Return it.
-		    if (initalState.children.Count == 0)
-		    {
-		        Console.WriteLine("SERIOUS ERROR OCCURED: No children ");
-		    }
-		    else
-		    {
-		        next = initalState.children[bestMove];
-		    }
+		    next = initalState.children[bestMove];
 		    done = true;
 		}
 
@@ -104,18 +102,12 @@ namespace Monte
 			{
 				//Loop through till a terminal state is found
 			    loopCount++;
-				if (loopCount >= maxRollout) {
-					//or maxroll out is hit
-                    //Console.WriteLine("ERROR: Could not find a terminal state.");
-					rolloutStart.addDraw ();
+			    //If max roll out is hit or no childern were generated
+				if (loopCount >= maxRollout || children.Count == 0) {
+                    //Record a draw
+					rolloutStart.addDraw (drawScore);
 					return;
 				}
-			    if (children.Count == 0)
-			    {
-			        //Console.WriteLine("ERROR: No childern.");
-			        rolloutStart.addDraw ();
-			        return;
-			    }
 				//Get a random child index
 				int index = randGen.Next(children.Count);
 				//and see if that node is terminal
@@ -130,9 +122,6 @@ namespace Monte
 				} else {
 					//Otherwise select that nodes as the childern and continue
 					children = children [index].generateChildren();
-					if (children.Count == 0) {
-						break;
-					}
 				}
 			}
 			//Reset the children as these are not 'real' children but just ones for the roll out. 
