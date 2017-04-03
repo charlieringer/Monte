@@ -13,6 +13,7 @@ namespace Monte
         private int maxForwardIters;
         private int lengthOfInput;
         private double alpha;
+        private double normVal;
         private int numbHiddenLayers;
         private readonly Random randGen = new Random (1);
         public delegate AIState StateCreator();
@@ -43,6 +44,7 @@ namespace Monte
                 alpha = float.Parse(node.Attributes.GetNamedItem("Alpha").Value);
                 maxForwardIters = int.Parse(node.Attributes.GetNamedItem("MaxForwardItters").Value);
                 numbHiddenLayers = int.Parse(node.Attributes.GetNamedItem("NumbHiddenLayers").Value);
+                normVal = double.Parse(node.Attributes.GetNamedItem("Normalisation").Value)
             }
             catch
             {
@@ -50,7 +52,8 @@ namespace Monte
                 alpha = 0.01;
                 maxForwardIters = 64;
                 numbHiddenLayers = 1;
-                Console.WriteLine("Error reading settings file. Default settings values used (Alpha = 0.01, MaxForwardItters=64, numbHiddenLayers=1).");
+                normVal = 0.05;
+                Console.WriteLine("Error reading settings file. Default settings values used (Alpha = 0.01, MaxForwardItters=64, NumbHiddenLayers=1, Normalisation=0.05).");
             }
 
         }
