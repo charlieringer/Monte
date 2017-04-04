@@ -8,7 +8,7 @@ namespace Monte
 	public class MCTSWithPruning : MCTSMasterAgent
 	{
 		private readonly Model model;
-		private readonly double pruningFactor;
+		private double pruningFactor;
 
 		public MCTSWithPruning (double _thinkingTime, double _exploreWeight, int _maxRollout, Model _model, double _pruningFactor, double _drawScore)
 			: base( _thinkingTime, _exploreWeight, _maxRollout, _drawScore)
@@ -20,33 +20,33 @@ namespace Monte
 
 		public MCTSWithPruning (Model _model)
 		{
-			model = _model;
-		    try
-		    {
-		        XmlDocument settings = new XmlDocument();
-		        settings.Load("Assets/Monte/DefaultSettings.xml");
-		        XmlNode node = settings.SelectSingleNode("descendant::PruningSettings");
-		        pruningFactor = Double.Parse(node.Attributes.GetNamedItem("PruneWorsePercent").Value);
-		    }
-		    catch
-		    {
-		        pruningFactor = 0.2;
-		        Console.WriteLine("Error reading settings file. Default settings values used (PruneWorstPercent = 0.2).");
-		    }
-
-
+		    model = _model;
+		    parseXML("Assets/Monte/DefaultSettings.xml");
 		}
 
 		public MCTSWithPruning (Model _model, String settingsFile) : base (settingsFile)
 		{
 			model = _model;
-			XmlDocument settings = new XmlDocument ();
-			settings.Load("settingsFile"); 
-
-			XmlNode root = settings.DocumentElement;
-			XmlNode node = root.SelectSingleNode("PruningSettings");
-			pruningFactor = Double.Parse(node.Attributes.GetNamedItem("PruneWorsePercent").Value);
+		    parseXML(settingsFile);
 		}
+
+	    void parseXML(String settingsFile)
+	    {
+
+	        try
+	        {
+	            XmlDocument settings = new XmlDocument();
+	            settings.Load(settingsFile);
+	            XmlNode node = settings.SelectSingleNode("descendant::PruningSettings");
+	            pruningFactor = Double.Parse(node.Attributes.GetNamedItem("PruneWorsePercent").Value);
+	        }
+	        catch
+	        {
+	            pruningFactor = 0.2;
+	            Console.WriteLine("Error reading settings file when constructing MCTSWithPruning. Default settings values used (PruneWorstPercent = 0.2).");
+	        }
+
+	    }
 
 		//Main MCTS algortim
 		protected override void mainAlgorithm(AIState initalState)

@@ -49,7 +49,7 @@ namespace Monte
                 drawReward = double.Parse(node.Attributes.GetNamedItem("DrawScore").Value);
                 confThreshold = double.Parse(node.Attributes.GetNamedItem("ConfidenceThreshold").Value);
             }
-            catch
+            catch(FileNotFoundException)
             {
                 //But if it fails default values are used
                 alpha = 0.01;
@@ -58,7 +58,17 @@ namespace Monte
                 normVal = 0.05;
                 confThreshold = 0.8;
                 drawReward = 0.5;
-                Console.WriteLine("Error reading settings file. Default settings values used (Alpha = 0.01, MaxForwardItters=64, NumbHiddenLayers=1, Normalisation=0.05, DrawSore=0.5, ConfidenceThreshold=0.8).");
+                Console.WriteLine("Error, could not find file when constructing Model. Default settings values used (Alpha = 0.01, MaxForwardItters=64, NumbHiddenLayers=1, Normalisation=0.05, DrawSore=0.5, ConfidenceThreshold=0.8).");
+            } catch
+            {
+                //But if it fails default values are used
+                alpha = 0.01;
+                maxForwardIters = 64;
+                numbHiddenLayers = 1;
+                normVal = 0.05;
+                confThreshold = 0.8;
+                drawReward = 0.5;
+                Console.WriteLine("Error reading settings file when when constructing Model. Default settings values used (Alpha = 0.01, MaxForwardItters=64, NumbHiddenLayers=1, Normalisation=0.05, DrawSore=0.5, ConfidenceThreshold=0.8).");
             }
 
         }
@@ -105,7 +115,7 @@ namespace Monte
             if (lengthOfInput == 0)
             {
                 AIState state = sc();
-                if (!validate(state))
+                if (!validateAIState(state))
                 {
                     return;
                 }
@@ -176,7 +186,6 @@ namespace Monte
                 List<AIState> children = currentState.generateChildren();
                 if (count == maxForwardIters || children.Count == 0)
                 {
-                    //TODO: Do we want to handle draws like this?
                     while (currentState.parent != null)
                     {
                         inputs.Add(preprocess(currentState.stateRep));
@@ -258,7 +267,6 @@ namespace Monte
                 //Update weights between output layer and hidden layer
                 for (int j = 0; j < thisPlayer.wOut.Length; j++)
                 {
-                    //TODO: Make sure we calculate the cost for the next layer correctly.
                     //Cost at the last hidden layer is totError * the current weight
                     hiddenCosts[j] = totalError * thisPlayer.wOut[j];
                     //Weight is updated by the totError * the ourput at the hidden layer * alpha(learning rate)
@@ -300,7 +308,6 @@ namespace Monte
                             else
                                 thisPlayer.wH[k, m * lengthOfInput + l] +=
                                     alpha * hCost * totalErrorH * hiddenLayers[i][k - 1, m] + grt0HCost;
-                            //TODO: Make sure we calculate the cost for the next layer correctly.
                             nextHiddenCosts[m] += totalErrorH * thisPlayer.wH[k,m * lengthOfInput + l];
                         }
                         //Once we are done updated all of the weights assoiated with this node we update the
@@ -374,7 +381,7 @@ namespace Monte
             return processedInput;
         }
 
-        private static bool validate(AIState state)
+        private static bool validateAIState(AIState state)
         {
             if (state == null)
             {

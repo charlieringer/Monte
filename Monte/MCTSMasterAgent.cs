@@ -44,7 +44,7 @@ namespace Monte
                 maxRollout = 64;
                 drawScore = 0.5;
                 Console.WriteLine(
-                    "Error, could not find file. Default settings values used (ThinkingTime = 0.25 secs, ExploreWeight = 1.45, MaxRollout = 64, DrawScore = 0.5).");
+                    "Error, could not find file when constructing MCTS base class. Default settings values used (ThinkingTime = 0.25 secs, ExploreWeight = 1.45, MaxRollout = 64, DrawScore = 0.5).");
             }
             catch
             {
@@ -53,7 +53,7 @@ namespace Monte
                 maxRollout = 64;
                 drawScore = 0.5;
                 Console.WriteLine(
-                    "Error reading settings file, perhaps it is malformed. Default settings values used (ThinkingTime = 0.25 secs, ExploreWeight = 1.45, MaxRollout = 64, DrawScore = 0.5).");
+                    "Error reading settings file when constructing MCTS base class, perhaps it is malformed. Default settings values used (ThinkingTime = 0.25 secs, ExploreWeight = 1.45, MaxRollout = 64, DrawScore = 0.5).");
             }
         }
 

@@ -37,16 +37,8 @@ namespace Monte
 	            //Once done set the best child to this
 	            AIState bestNode = initalState;
 	            //And loop through it's child
-	            //int count = 0;
 	            while(bestNode.children.Count > 0)
 	            {
-//				    count++;
-//				    if (count > 100)
-//				    {
-//				        Console.WriteLine("Problem looping through all children.");
-//				        break;
-//				    }
-
 	                //Set the scores as a base line
 	                double bestScore = -1;
 	                int bestIndex = -1;
