@@ -17,6 +17,6 @@
 		NumbHiddenLayers="3" 
 		Normalisation="0.05" 
 		ConfidenceThreshold="0.8"
-		DrawValue="0.5">
+		DrawScore="0.5">
 	</DeepLearningSettings>
 </Settings>

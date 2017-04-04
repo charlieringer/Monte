@@ -45,6 +45,7 @@ namespace Monte
                 drawScore = 0.5;
                 Console.WriteLine(
                     "Error, could not find file when constructing MCTS base class. Default settings values used (ThinkingTime = 0.25 secs, ExploreWeight = 1.45, MaxRollout = 64, DrawScore = 0.5).");
+                Console.WriteLine("File:" + filePath);
             }
             catch
             {
@@ -54,6 +55,7 @@ namespace Monte
                 drawScore = 0.5;
                 Console.WriteLine(
                     "Error reading settings file when constructing MCTS base class, perhaps it is malformed. Default settings values used (ThinkingTime = 0.25 secs, ExploreWeight = 1.45, MaxRollout = 64, DrawScore = 0.5).");
+                Console.WriteLine("File:" + filePath);
             }
         }
 

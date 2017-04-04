@@ -19,10 +19,25 @@ namespace Monte
         private readonly Random randGen = new Random (1);
         public delegate AIState StateCreator();
 
-        //TODO:This below is a poor way to do this. Think of a better way to stop signature classes in the constructor
         public Model(){ parseXML("Assets/Monte/DefaultSettings.xml"); }
-        public Model(string settingsFile, int flag){ parseXML(settingsFile); }
-        public Model (string modelfile) : this(modelfile, "Assets/Monte/DefaultSettings.xml") {}
+
+        public Model(string file)
+        {
+            if (file.Contains(".xml"))
+            {
+                parseXML(file);
+            } else if (file.Contains(".model"))
+            {
+                parseModel(file);
+                parseXML("Assets/Monte/DefaultSettings.xml");
+
+            } else
+            {
+                Console.WriteLine("Error: File supplied was neither a model or xml file. Constucting an empty model with default settings");
+                parseXML("Assets/Monte/DefaultSettings.xml");
+            }
+        }
+
         public Model(string modelfile, string settingsFile)
         {
             parseXML(settingsFile);
@@ -59,7 +74,8 @@ namespace Monte
                 confThreshold = 0.8;
                 drawReward = 0.5;
                 Console.WriteLine("Error, could not find file when constructing Model. Default settings values used (Alpha = 0.01, MaxForwardItters=64, NumbHiddenLayers=1, Normalisation=0.05, DrawSore=0.5, ConfidenceThreshold=0.8).");
-            } catch
+                Console.WriteLine("File:" + settingsFile);
+            } catch (Exception e)
             {
                 //But if it fails default values are used
                 alpha = 0.01;
@@ -68,7 +84,8 @@ namespace Monte
                 normVal = 0.05;
                 confThreshold = 0.8;
                 drawReward = 0.5;
-                Console.WriteLine("Error reading settings file when when constructing Model. Default settings values used (Alpha = 0.01, MaxForwardItters=64, NumbHiddenLayers=1, Normalisation=0.05, DrawSore=0.5, ConfidenceThreshold=0.8).");
+                Console.WriteLine("Error reading settings file when constructing Model. Default settings values used (Alpha = 0.01, MaxForwardItters=64, NumbHiddenLayers=1, Normalisation=0.05, DrawSore=0.5, ConfidenceThreshold=0.8).");
+                Console.WriteLine("File:" + settingsFile);
             }
 
         }
@@ -135,6 +152,7 @@ namespace Monte
                 double avgCost = trainingEpisode(sc, gamesPerEpisode);
                 //Output this cost (so we can see if our cost is reducing
                 Console.WriteLine("Training Episode " + (i+1) + " of " + episodes +" complete. Avg cost: " + avgCost);
+                if (avgCost <= 0.0001) break;
             }
 
             //Once done we output it to a file which is the time it was made
@@ -383,17 +401,10 @@ namespace Monte
 
         private static bool validateAIState(AIState state)
         {
-            if (state == null)
-            {
-                Console.WriteLine("Error, state from State Creator is null, are you instantiating correctly? Terminating");
-                return false;
-            }
-            if (state.stateRep == null)
-            {
-                Console.WriteLine("Error, stateRep from State Creator is null, are you instantiating correctly? Terminating");
-                return false;
-            }
-            return true;
+            if (state?.stateRep != null) return true;
+            if(state == null) Console.WriteLine("Error, state from State Creator is null, are you instantiating correctly? Terminating");
+            else Console.WriteLine("Error, stateRep from State Creator is null, are you instantiating correctly? Terminating");
+            return false;
         }
 
         private static double sig(double x)

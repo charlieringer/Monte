@@ -44,6 +44,7 @@ namespace Monte
 	        {
 	            pruningFactor = 0.2;
 	            Console.WriteLine("Error reading settings file when constructing MCTSWithPruning. Default settings values used (PruneWorstPercent = 0.2).");
+	            Console.WriteLine("File:" + settingsFile);
 	        }
 
 	    }
@@ -166,7 +167,8 @@ namespace Monte
 	            {
 	                terminalStateFound = true;
 	                //If it is a win add a win
-	                if(endResult == rolloutStart.playerIndex) rolloutStart.addWin();
+	                if(endResult == rolloutStart.playerIndex)
+	                    rolloutStart.addWin();
 	                //Else add a loss
 	                else rolloutStart.addLoss();
 	            } else {

@@ -31,17 +31,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MCTSMasterAgent.cs" />
-    <Compile Include="Network.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Agents\AIAgent.cs" />
+    <Compile Include="Agents\MCTS\MCTSMasterAgent.cs" />
+    <Compile Include="Agents\MCTS\MCTSSimpleAgent.cs" />
+    <Compile Include="Agents\MCTS\MCTSWithLearning.cs" />
+    <Compile Include="Agents\MCTS\MCTSWithPruning.cs" />
+    <Compile Include="Agents\ModelBasedAgent.cs" />
+    <Compile Include="Agents\RandomAgent.cs" />
     <Compile Include="AIState.cs" />
-    <Compile Include="MCTSSimpleAgent.cs" />
-    <Compile Include="MCTSWithPruning.cs" />
-    <Compile Include="MCTSWithLearning.cs" />
-    <Compile Include="AIAgent.cs" />
-    <Compile Include="ModelBasedAgent.cs" />
-    <Compile Include="Model.cs" />
-    <Compile Include="RandomAgent.cs" />
+    <Compile Include="Model\Model.cs" />
+    <Compile Include="Model\Network.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
