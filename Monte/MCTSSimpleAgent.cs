@@ -27,22 +27,17 @@ namespace Monte
 			//Get the start time
 			double startTime = DateTime.Now.Ticks;
 			double latestTick = startTime;
-			while (latestTick-startTime < thinkingTime) {
+		    int count = 0;
+			while (latestTick-startTime < thinkingTime)
+			{
+			    count++;
 				//Update the latest tick
 				latestTick = DateTime.Now.Ticks;
 				//Once done set the best child to this
 				AIState bestNode = initalState;
 				//And loop through it's child
-			    //int count = 0;
 				while(bestNode.children.Count > 0)
 				{
-//				    count++;
-//				    if (count > 100)
-//				    {
-//				        Console.WriteLine("Problem looping through all children.");
-//				        break;
-//				    }
-
 					//Set the scores as a base line
 				    double bestScore = -1;
 					int bestIndex = -1;
@@ -86,6 +81,7 @@ namespace Monte
 					bestMove = i;
 				}
 			}
+		    //Console.WriteLine("Number of Simulations = " + count);
 		    next = initalState.children[bestMove];
 		    done = true;
 		}

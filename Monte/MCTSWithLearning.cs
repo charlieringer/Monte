@@ -9,9 +9,9 @@ namespace Monte
 	{
 		private readonly Model model;
 
-		public MCTSWithLearning (double _thinkingTime, double _exploreWeight, int _maxRollout, double _drawScore, Model _model): base(_thinkingTime, _exploreWeight, _maxRollout, _drawScore) {  model = _model; }
+		public MCTSWithLearning (double _thinkingTime, double _exploreWeight, int _maxRollout, Model _model, double _drawScore): base(_thinkingTime, _exploreWeight, _maxRollout, _drawScore) {  model = _model; }
 		public MCTSWithLearning (Model _model) { model = _model; }
-		public MCTSWithLearning (String modelName, String settingsFile) : base (settingsFile) { model = new Model (modelName); }
+		public MCTSWithLearning (Model _model, String settingsFile) : base (settingsFile) { model = _model; }
 
 		//Main MCTS algortim
 	    protected override void mainAlgorithm(AIState initalState)

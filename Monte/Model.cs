@@ -14,6 +14,8 @@ namespace Monte
         private int lengthOfInput;
         private double alpha;
         private double normVal;
+        private double confThreshold;
+        private double drawReward;
         private int numbHiddenLayers;
         private readonly Random randGen = new Random (1);
         public delegate AIState StateCreator();
@@ -45,6 +47,8 @@ namespace Monte
                 maxForwardIters = int.Parse(node.Attributes.GetNamedItem("MaxForwardItters").Value);
                 numbHiddenLayers = int.Parse(node.Attributes.GetNamedItem("NumbHiddenLayers").Value);
                 normVal = double.Parse(node.Attributes.GetNamedItem("Normalisation").Value);
+                drawReward = double.Parse(node.Attributes.GetNamedItem("DrawScore").Value);
+                confThreshold = double.Parse(node.Attributes.GetNamedItem("ConfidenceThreshold").Value);
             }
             catch
             {
@@ -53,7 +57,9 @@ namespace Monte
                 maxForwardIters = 64;
                 numbHiddenLayers = 1;
                 normVal = 0.05;
-                Console.WriteLine("Error reading settings file. Default settings values used (Alpha = 0.01, MaxForwardItters=64, NumbHiddenLayers=1, Normalisation=0.05).");
+                confThreshold = 0.8;
+                drawReward = 0.5;
+                Console.WriteLine("Error reading settings file. Default settings values used (Alpha = 0.01, MaxForwardItters=64, NumbHiddenLayers=1, Normalisation=0.05, DrawSore=0.5, ConfidenceThreshold=0.8).");
             }
 
         }
@@ -177,7 +183,7 @@ namespace Monte
                         inputs.Add(preprocess(currentState.stateRep));
                         results.Add(currentState.stateScore.Value);
 
-                        rewards.Add(0.5);
+                        rewards.Add(drawReward);
 
                         double[,] hiddenLayer = getHiddenLayers(preprocess(currentState.stateRep), currentState.playerIndex);
                         hiddenLayers.Add (hiddenLayer);
@@ -198,7 +204,7 @@ namespace Monte
                 for (int i = children.Count-1; i >= 0; i--)
                 {
                     Double randNum = randGen.NextDouble();
-                    if (randNum < children[i].stateScore || randNum > 0.8 || children[i].getWinner() == currentState.playerIndex)
+                    if (randNum < children[i].stateScore || randNum > confThreshold || children[i].getWinner() == currentState.playerIndex)
                     {
                         selectedChild = i;
                         childSelected = true;

@@ -37,9 +37,9 @@ namespace Monte
 
 		}
 
-		public MCTSWithPruning (String modelName, String settingsFile) : base (settingsFile)
+		public MCTSWithPruning (Model _model, String settingsFile) : base (settingsFile)
 		{
-			model = new Model (modelName);
+			model = _model;
 			XmlDocument settings = new XmlDocument ();
 			settings.Load("settingsFile"); 
 
@@ -56,23 +56,18 @@ namespace Monte
 			//children = prune (children);
 
 			//Get the start time
-			double startTime = (DateTime.Now.Ticks)/10000000;
+			double startTime = DateTime.Now.Ticks;
 			double latestTick = startTime;
 			while (latestTick-startTime < thinkingTime) {
 				//Update the latest tick
-				latestTick = (DateTime.Now.Ticks)/10000000;
+				latestTick = DateTime.Now.Ticks;
 				//Once done set the best child to this
 				AIState bestNode = initalState;
 				//And loop through it's child
 				while(bestNode.children.Count > 0)
 				{
 					//Prune the children
-				    if (bestNode.unpruned)
-				    {
-				        bestNode.children =  prune(bestNode.children);
-				        bestNode.unpruned = false;
-				    }
-
+				    if (bestNode.unpruned) prune(bestNode);
 				    //Set the best scores and index
 				    double bestScore = -1;
 				    int bestIndex = -1;
@@ -94,10 +89,9 @@ namespace Monte
 
 						double totalScore = score+exploreRating;
 						//Again if the score is better updae
-						if (totalScore > bestScore){
-							bestScore = totalScore;
-							bestIndex = i;
-						}
+						if (!(totalScore > bestScore)) continue;
+						bestScore = totalScore;
+						bestIndex = i;
 					}
 					//And set the best child for the next iteration
 					bestNode = bestNode.children[bestIndex];
@@ -190,14 +184,20 @@ namespace Monte
 	        }
 	    }
 
-		private List<AIState> prune(List<AIState> list)
+		private void prune(AIState initState)
 		{
-			//Sort the list
-		    foreach (AIState state in list) state.stateScore = model.evaluate(state);
-			list = AIState.mergeSort(list);
-			int numbNodesToRemove = (int)Math.Floor(list.Count * pruningFactor);
-			list.RemoveRange(0, numbNodesToRemove);
-			return list;
+		    List<AIState> children = initState.children;
+		    //evaluate
+		    foreach (AIState state in children) state.stateScore = model.evaluate(state);
+            //Sort the children
+			children = AIState.mergeSort(children);
+		    //Work out how many nodes to remove
+			int numbNodesToRemove = (int)Math.Floor(children.Count * pruningFactor);
+		    //Remove them
+			children.RemoveRange(0, numbNodesToRemove);
+		    //Update the children and set unpruned to false.
+		    initState.children = children;
+		    initState.unpruned = false;
 		}
 	}
 }
