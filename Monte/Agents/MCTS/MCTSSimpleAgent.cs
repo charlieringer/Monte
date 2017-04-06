@@ -7,13 +7,22 @@ namespace Monte
 	{
 		public MCTSSimpleAgent(){}
 		public MCTSSimpleAgent(string file):base(file){}
-		public MCTSSimpleAgent (double _thinkingTime, double _exploreWeight, int _maxRollout, double _drawScore) : base(_thinkingTime, _exploreWeight, _maxRollout, _drawScore){}
+		public MCTSSimpleAgent (int _numbSimulations, double _exploreWeight, int _maxRollout, double _drawScore) : base(_numbSimulations, _exploreWeight, _maxRollout, _drawScore){}
 
 		//Main MCTS algortim
 		protected override void mainAlgorithm(AIState initalState)
 		{
 			//Make the intial children
 			initalState.generateChildren ();
+		    foreach (var child in initalState.children)
+		    {
+		        if (child.getWinner() >= 0 && child.getWinner() == initalState.playerIndex)
+		        {
+		            next = child;
+		            done = true;
+		            return;
+		        }
+		    }
 		    //if no childern are generated
 		    if (initalState.children.Count == 0)
 		    {
@@ -24,15 +33,10 @@ namespace Monte
 		        return;
 		    }
 
-			//Get the start time
-			double startTime = DateTime.Now.Ticks;
-			double latestTick = startTime;
 		    int count = 0;
-			while (latestTick-startTime < thinkingTime)
+		    while(count < numbSimulations)
 			{
 			    count++;
-				//Update the latest tick
-				latestTick = DateTime.Now.Ticks;
 				//Once done set the best child to this
 				AIState bestNode = initalState;
 				//And loop through it's child
@@ -81,7 +85,7 @@ namespace Monte
 					bestMove = i;
 				}
 			}
-		    //Console.WriteLine("Number of Simulations = " + count);
+		    //Console.WriteLine("MCTS Simple: Number of Simulations = " + count);
 		    next = initalState.children[bestMove];
 		    done = true;
 		}
@@ -112,7 +116,7 @@ namespace Monte
 				{
 					terminalStateFound = true;
 					//If it is a win add a win
-					if(endResult == rolloutStart.playerIndex) rolloutStart.addWin();
+					if(endResult != rolloutStart.playerIndex) rolloutStart.addWin();
 					//Else add a loss
 					else rolloutStart.addLoss();
 				} else {

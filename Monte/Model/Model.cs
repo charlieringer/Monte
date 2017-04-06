@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
+using System.Threading;
 
 namespace Monte
 {
@@ -18,8 +19,13 @@ namespace Monte
         private int numbHiddenLayers;
         private readonly Random randGen = new Random (1);
         public delegate AIState StateCreator();
+        private double[,] runTimeHiddenLayers;
 
-        public Model(){ parseXML("Assets/Monte/DefaultSettings.xml"); }
+        public Model()
+        {
+            parseXML("Assets/Monte/DefaultSettings.xml");
+            runTimeHiddenLayers = new double[numbHiddenLayers, lengthOfInput];
+        }
 
         public Model(string file)
         {
@@ -36,12 +42,14 @@ namespace Monte
                 Console.WriteLine("Error: File supplied was neither a model or xml file. Constucting an empty model with default settings");
                 parseXML("Assets/Monte/DefaultSettings.xml");
             }
+            runTimeHiddenLayers = new double[numbHiddenLayers, lengthOfInput];
         }
 
         public Model(string modelfile, string settingsFile)
         {
             parseXML(settingsFile);
             parseModel(modelfile);
+            runTimeHiddenLayers = new double[numbHiddenLayers, lengthOfInput];
 
         }
 
@@ -111,9 +119,15 @@ namespace Monte
                 int nextStartPos = player0Network.readFromFile(lines, 2);
                 player1Network.readFromFile(lines, nextStartPos);
             }
+            catch (FileNotFoundException)
+            {
+                Console.WriteLine("Error, could not find file. Could not initalise model. Please check file/filepath.");
+                Console.WriteLine("File path:" + modelfile);
+            }
             catch
             {
-                Console.WriteLine("Error reading model file. Could not initalise model. Please check file/filepath.");
+                Console.WriteLine("Error reading model file, perhaps it is malformed. Could not initalise model. Please check file/filepath.");
+                Console.WriteLine("File path:" + modelfile);
             }
 
         }
@@ -220,7 +234,7 @@ namespace Monte
                 }
 
                 //Evaluate all moves
-                foreach(AIState child in children) child.stateScore = evaluate(child);
+                foreach(AIState child in children) child.stateScore = evaluateTraining(child);
                 //and then sort them
                 children = AIState.mergeSort(children);
 
@@ -338,7 +352,16 @@ namespace Monte
             return totalCost/inputs.Count;
         }
 
+
         public double evaluate(AIState state)
+        {
+            int[] processedBoard = preprocess(state.stateRep);
+            double[,] hiddenLayer = getHiddenLayers(processedBoard, state.playerIndex, runTimeHiddenLayers);
+            double score = getRawScore(hiddenLayer, state.playerIndex);
+            return sig(score);
+        }
+
+        public double evaluateTraining(AIState state)
         {
             int[] processedBoard = preprocess(state.stateRep);
             double[,] hiddenLayer = getHiddenLayers(processedBoard, state.playerIndex);
@@ -346,24 +369,89 @@ namespace Monte
             return sig(score);
         }
 
-        public double[,] getHiddenLayers(int[] stateBoard, int playerIndx)
+        private double[,] getHiddenLayers(int[] stateBoard, int playerIndx, double[,] hiddenLayers)
+        {
+            Network thisPlayer = (playerIndx == 0) ? player0Network : player1Network;
+
+            for (int j = 0; j < lengthOfInput; j++)
+            {
+                double thisElement = 0.0;
+                for(int k = 0; k < lengthOfInput; k++)
+                {
+                    thisElement += stateBoard[j]*thisPlayer.wH[0, j*lengthOfInput+k];
+                }
+                thisElement += thisPlayer.biasH[0,j];
+                hiddenLayers[0,j] = tanH(thisElement);
+            }
+
+            for (int i = 1; i < numbHiddenLayers; i++)
+            {
+                for (int j = 0; j < lengthOfInput; j++)
+                {
+                    hiddenLayers[i,j] = getHiddenNeuron(i,j, hiddenLayers, thisPlayer);
+                }
+            }
+            return hiddenLayers;
+
+            //Make a new AI thread with this state
+//            aiThread = new Thread (() => mainAlgorithm(initalState));
+//            //And start it.
+//            bool aiHasStarted = false;
+//            //Repeatedly trys to start a new thread (in case the first fails)
+//            while (!aiHasStarted)
+//            {
+//                try
+//                {
+//                    aiThread.Start();
+//                    aiHasStarted = true;
+//                }
+//                catch
+//                {
+//                    Console.WriteLine("Error: Failed to create thread. Retrying...");
+//                }
+//            }
+            //Set started to tru
+        }
+
+        private double getHiddenNeuron(int i, int j, double[,] hiddenLayers, Network thisPlayer)
+        {
+            double thisElement = 0.0;
+            for(int k = 0; k < lengthOfInput; k++)
+            {
+                thisElement += hiddenLayers[i-1,j]*thisPlayer.wH[i, j*lengthOfInput+k];
+            }
+            thisElement += thisPlayer.biasH[i,j];
+            return tanH(thisElement);
+        }
+
+
+        private double[,] getHiddenLayers(int[] stateBoard, int playerIndx)
         {
             Network thisPlayer = (playerIndx == 0) ? player0Network : player1Network;
             double[,] hiddenLayers = new double[numbHiddenLayers, lengthOfInput];
 
-            for (int i = 0; i < numbHiddenLayers; i++)
+            for (int j = 0; j < lengthOfInput; j++)
+            {
+                double thisElement = 0.0;
+                for(int k = 0; k < lengthOfInput; k++)
+                {
+                    thisElement += stateBoard[j]*thisPlayer.wH[0, j*lengthOfInput+k];
+                }
+                thisElement += thisPlayer.biasH[0,j];
+                hiddenLayers[0,j] = tanH(thisElement);
+            }
+
+            for (int i = 1; i < numbHiddenLayers; i++)
             {
                 for (int j = 0; j < lengthOfInput; j++)
                 {
                     double thisElement = 0.0;
                     for(int k = 0; k < lengthOfInput; k++)
                     {
-                        if(i == 0) thisElement += stateBoard[j]*thisPlayer.wH[i, j*lengthOfInput+k];
-                        else thisElement += hiddenLayers[i-1,j]*thisPlayer.wH[i, j*lengthOfInput+k];
+                        thisElement += hiddenLayers[i-1,j]*thisPlayer.wH[i, j*lengthOfInput+k];
                     }
                     thisElement += thisPlayer.biasH[i,j];
                     hiddenLayers[i,j] = tanH(thisElement);
-
                 }
             }
             return hiddenLayers;
@@ -373,10 +461,16 @@ namespace Monte
         {
             Network thisPlayer = (playerIndx == 0) ? player0Network : player1Network;
 
-            double returnValue = 0.0f;
-            for(int i = 0; i < lengthOfInput; i++)
+            if (thisPlayer?.wH == null)
             {
-                returnValue += hiddenLayer[numbHiddenLayers-1,i]*thisPlayer.wOut[i];
+                Console.WriteLine("Model is null. Please check initialisation.");
+                return 0;
+            }
+
+            double returnValue = 0.0f;
+            for (int i = 0; i < lengthOfInput; i++)
+            {
+                returnValue += hiddenLayer[numbHiddenLayers - 1, i] * thisPlayer.wOut[i];
             }
             returnValue += thisPlayer.biasOut;
             return returnValue;

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Settings>
 	<MCTSSettings 
-		ThinkingTime="0.5" 
+		NumberOfSimulations="1000" 
 		ExploreWeight="1.45" 
 		MaxRollout="64" 
 		DrawScore="0.5">

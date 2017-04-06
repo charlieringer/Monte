@@ -10,13 +10,12 @@ namespace Monte
 		private readonly Model model;
 		private double pruningFactor;
 
-		public MCTSWithPruning (double _thinkingTime, double _exploreWeight, int _maxRollout, Model _model, double _pruningFactor, double _drawScore)
-			: base( _thinkingTime, _exploreWeight, _maxRollout, _drawScore)
+		public MCTSWithPruning (int _numbSimulations, double _exploreWeight, int _maxRollout, Model _model, double _pruningFactor, double _drawScore)
+			: base( _numbSimulations, _exploreWeight, _maxRollout, _drawScore)
 		{
 			model = _model;
 			pruningFactor = _pruningFactor;
 		}
-
 
 		public MCTSWithPruning (Model _model)
 		{
@@ -53,18 +52,24 @@ namespace Monte
 		protected override void mainAlgorithm(AIState initalState)
 		{
 			//Make the intial children
-			List<AIState> children = initalState.generateChildren ();
-			//children = prune (children);
+		    initalState.generateChildren ();
+		    foreach (var child in initalState.children)
+		    {
+		        if (child.getWinner() >= 0 && child.getWinner() == initalState.playerIndex)
+		        {
+		            next = child;
+		            done = true;
+		            return;
 
-			//Get the start time
-			double startTime = DateTime.Now.Ticks;
-			double latestTick = startTime;
-			while (latestTick-startTime < thinkingTime) {
-				//Update the latest tick
-				latestTick = DateTime.Now.Ticks;
+		        }
+		    }
+		    //Console.WriteLine("Start Count = : " + initalState.children.Count);
+		    int count = 0;
+			while(count < numbSimulations){
 				//Once done set the best child to this
 				AIState bestNode = initalState;
 				//And loop through it's child
+			    count++;
 				while(bestNode.children.Count > 0)
 				{
 					//Prune the children
@@ -106,77 +111,55 @@ namespace Monte
 			int mostGames = -1;
 			int bestMove = -1;
 			//Loop through all childern
-			for(int i = 0; i < children.Count; i++)
+			for(int i = 0; i < initalState.children.Count; i++)
 			{
 				//find the one that was played the most (this is the best move)
-				int games = children[i].totGames;
+				int games = initalState.children[i].totGames;
 				if(games >= mostGames)
 				{
 					mostGames = games;
 					bestMove = i;
 				}
 			}
+		    //Console.WriteLine("MCTS Pruning: Number of Simulations = " + count);
 			//Return it.
-			next = children[bestMove];
+		    //Console.WriteLine("End Count = : " + initalState.children.Count);
+			next = initalState.children[bestMove];
 			done = true;
 		}
 
-        //Rollout function (plays random moves till it hits a termination)
+	    //Rollout function (plays random moves till it hits a termination)
 	    protected override void rollout(AIState rolloutStart)
 	    {
 	        bool terminalStateFound = false;
 	        //Get the children
 	        List<AIState> children = rolloutStart.generateChildren();
 
-	        int count = 0;
+	        int loopCount = 0;
 	        while(!terminalStateFound)
 	        {
 	            //Loop through till a terminal state is found
-	            count++;
+	            loopCount++;
 	            //If max roll out is hit or no childern were generated
-	            if (count >= maxRollout || children.Count == 0) {
-	                //record a draw
+	            if (loopCount >= maxRollout || children.Count == 0) {
+	                //Record a draw
 	                rolloutStart.addDraw (drawScore);
 	                return;
 	            }
-
-	            double totalScore = 0.0f;
-	            List<double> scores = new List<double> ();
-
-	            foreach(AIState child in children)
-	            {
-	                if (child.stateScore == null) {
-	                    child.stateScore = model.evaluate(child);
-	                }
-	                totalScore += child.stateScore.Value;
-	                scores.Add (child.stateScore.Value);
-	            }
-	            double randomPoint = randGen.NextDouble() * totalScore;
-	            double runningTotal = 0.0f;
-	            int index = 0;
-	            for (int i = 0; i < scores.Count; i++) {
-	                runningTotal += scores [i];
-	                if (runningTotal >= randomPoint) {
-	                    index = i;
-	                    break;
-	                }
-	            }
+	            //Get a random child index
+	            int index = randGen.Next(children.Count);
 	            //and see if that node is terminal
 	            int endResult = children[index].getWinner ();
 	            if(endResult >= 0)
 	            {
 	                terminalStateFound = true;
 	                //If it is a win add a win
-	                if(endResult == rolloutStart.playerIndex)
-	                    rolloutStart.addWin();
+	                if(endResult != rolloutStart.playerIndex) rolloutStart.addWin();
 	                //Else add a loss
 	                else rolloutStart.addLoss();
 	            } else {
 	                //Otherwise select that nodes as the childern and continue
 	                children = children [index].generateChildren();
-	                if (children.Count == 0) {
-	                    break;
-	                }
 	            }
 	        }
 	        //Reset the children as these are not 'real' children but just ones for the roll out.
@@ -186,20 +169,88 @@ namespace Monte
 	        }
 	    }
 
+//	    //Rollout function (plays random moves till it hits a termination)
+//	    protected override void rollout(AIState rolloutStart)
+//	    {
+//	        bool terminalStateFound = false;
+//	        //Get the children
+//	        List<AIState> children = rolloutStart.generateChildren();
+//
+//	        int count = 0;
+//	        while(!terminalStateFound)
+//	        {
+//	            //Loop through till a terminal state is found
+//	            count++;
+//	            //If max roll out is hit or no childern were generated
+//	            if (count >= maxRollout || children.Count == 0) {
+//	                //record a draw
+//	                rolloutStart.addDraw (drawScore);
+//	                return;
+//	            }
+//
+//
+//	            foreach(AIState child in children) child.stateScore = model.evaluate(child);
+//	            children = AIState.mergeSort(children);
+//
+//	            bool childSelected = false;
+//	            int selectedChild = 0;
+//
+//	            for (int i = children.Count-1; i >= 0; i--)
+//	            {
+//	                Double randNum = randGen.NextDouble();
+//	                //TODO: Paramiterise the conf threshold.
+//	                if (randNum < children[i].stateScore || randNum > 0.8)
+//	                {
+//	                    selectedChild = i;
+//	                    childSelected = true;
+//	                    break;
+//	                }
+//	            }
+//
+//	            //and see if that node is terminal
+//	            int endResult = children[selectedChild].getWinner ();
+//	            if(endResult >= 0)
+//	            {
+//	                terminalStateFound = true;
+//	                //If it is a win add a win
+//	                if(endResult != rolloutStart.playerIndex) rolloutStart.addWin();
+//	                //Else add a loss
+//	                else rolloutStart.addLoss();
+//	            } else {
+//	                //Otherwise select that nodes as the childern and continue
+//	                children = children [selectedChild].generateChildren();
+//	                if (children.Count == 0) {
+//	                    break;
+//	                }
+//	            }
+//	        }
+//	        //Reset the children as these are not 'real' children but just ones for the roll out.
+//	        foreach( AIState child in rolloutStart.children)
+//	        {
+//	            child.children = new List<AIState>();
+//	        }
+//	    }
+
 		private void prune(AIState initState)
 		{
+		    double startTime = DateTime.Now.Ticks;
 		    List<AIState> children = initState.children;
 		    //evaluate
 		    foreach (AIState state in children) state.stateScore = model.evaluate(state);
+		    //Console.WriteLine("Eval took :" + (DateTime.Now.Ticks - startTime)/10000000);
             //Sort the children
 			children = AIState.mergeSort(children);
+		    //Console.WriteLine("Sort took :" + (DateTime.Now.Ticks - startTime)/10000000);
 		    //Work out how many nodes to remove
 			int numbNodesToRemove = (int)Math.Floor(children.Count * pruningFactor);
 		    //Remove them
-			children.RemoveRange(0, numbNodesToRemove);
+			children.RemoveRange(children.Count-numbNodesToRemove-1, numbNodesToRemove);
+		    //children.RemoveRange(0, numbNodesToRemove);
 		    //Update the children and set unpruned to false.
 		    initState.children = children;
 		    initState.unpruned = false;
+		    double timeCost = DateTime.Now.Ticks - startTime;
+		    //Console.WriteLine("Pruning took :" + timeCost/10000000);
 		}
 	}
 }
