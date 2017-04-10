@@ -28,6 +28,8 @@ namespace Monte
 		//The score which is derived from the learner and represents the score for the state
 		public double? stateScore { get; set; }
 
+	    public bool treeNode = false;
+
 	    protected AIState(){}
 
 	    protected AIState(int pIndex, AIState _parent, int _depth)

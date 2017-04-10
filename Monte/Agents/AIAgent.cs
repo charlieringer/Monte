@@ -1,4 +1,5 @@
 ﻿using System.Threading;
+using System.Threading.Tasks;
 using System;
 
 namespace Monte
@@ -6,7 +7,7 @@ namespace Monte
 	public abstract class AIAgent
 	{
 		protected Random randGen = new Random ();
-		protected Thread aiThread;
+		protected Task aiThread;
 		public bool done;
 		public bool started;
 		public AIState next;
@@ -17,14 +18,14 @@ namespace Monte
 			started = false;
 			done = false;
 			next = null;
-		    aiThread.Join();
+		    //aiThread.Join();
 		}
 
 	    //Kicks off the the main algortims on a sperate thread
 		public void run(AIState initalState)
 		{
 			//Make a new AI thread with this state
-			aiThread = new Thread (() => mainAlgorithm(initalState));
+			aiThread = new Task (() => mainAlgorithm(initalState));
 			//And start it.
 		    bool aiHasStarted = false;
 		    //Repeatedly trys to start a new thread (in case the first fails)

@@ -18,8 +18,10 @@ namespace Monte
 	    {
 	        //Make the intial children
 	        initialState.generateChildren ();
+	        initialState.treeNode = true;
 	        foreach (var child in initialState.children)
 	        {
+	            child.treeNode = true;
 	            if (child.getWinner() >= 0 && child.getWinner() == initialState.playerIndex)
 	            {
 	                next = child;
@@ -180,7 +182,7 @@ namespace Monte
                 }
 
 
-                foreach(AIState child in children) child.stateScore = model.evaluate(child);
+                foreach(AIState child in children) if(child.stateScore == null)child.stateScore = model.evaluate(child);
                 children = AIState.mergeSort(children);
 
                 bool childSelected = false;
@@ -215,10 +217,10 @@ namespace Monte
                     }
                 }
             }
-            //Reset the children as these are not 'real' children but just ones for the roll out.
+            //This node is now expanded so set tree node to true
             foreach( AIState child in rolloutStart.children)
             {
-                child.children = new List<AIState>();
+                child.treeNode = true;
             }
         }
     }
