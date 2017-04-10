@@ -10,13 +10,13 @@ namespace Monte
 		public MCTSSimpleAgent (int _numbSimulations, double _exploreWeight, int _maxRollout, double _drawScore) : base(_numbSimulations, _exploreWeight, _maxRollout, _drawScore){}
 
 		//Main MCTS algortim
-		protected override void mainAlgorithm(AIState initalState)
+		protected override void mainAlgorithm(AIState initialState)
 		{
 			//Make the intial children
-			initalState.generateChildren ();
-		    foreach (var child in initalState.children)
+			initialState.generateChildren ();
+		    foreach (var child in initialState.children)
 		    {
-		        if (child.getWinner() >= 0 && child.getWinner() == initalState.playerIndex)
+		        if (child.getWinner() == (initialState.playerIndex+1)%2)
 		        {
 		            next = child;
 		            done = true;
@@ -24,7 +24,7 @@ namespace Monte
 		        }
 		    }
 		    //if no childern are generated
-		    if (initalState.children.Count == 0)
+		    if (initialState.children.Count == 0)
 		    {
 		        //Report this error and return.
 		        Console.WriteLine("Error: State supplied has no childern.");
@@ -38,7 +38,7 @@ namespace Monte
 			{
 			    count++;
 				//Once done set the best child to this
-				AIState bestNode = initalState;
+				AIState bestNode = initialState;
 				//And loop through it's child
 				while(bestNode.children.Count > 0)
 				{
@@ -55,7 +55,7 @@ namespace Monte
 						//UBT (Upper Confidence Bound 1 applied to trees) function for determining
 						//How much we want to explore vs exploit.
 						//Because we want to change things the constant is configurable.
-						double exploreRating = exploreWeight*Math.Sqrt(Math.Log(initalState.totGames+1)/(games+0.1));
+						double exploreRating = exploreWeight*Math.Sqrt(Math.Log(initialState.totGames + 1 / (games + 0.1)));
 
 						double totalScore = score+exploreRating;
 						//Again if the score is better updae
@@ -75,10 +75,10 @@ namespace Monte
 			int mostGames = -1;
 			int bestMove = -1;
 			//Loop through all childern
-			for(int i = 0; i < initalState.children.Count; i++)
+			for(int i = 0; i < initialState.children.Count; i++)
 			{
 				//find the one that was played the most (this is the best move)
-				int games = initalState.children[i].totGames;
+				int games = initialState.children[i].totGames;
 				if(games >= mostGames)
 				{
 					mostGames = games;
@@ -86,7 +86,7 @@ namespace Monte
 				}
 			}
 		    //Console.WriteLine("MCTS Simple: Number of Simulations = " + count);
-		    next = initalState.children[bestMove];
+		    next = initialState.children[bestMove];
 		    done = true;
 		}
 
@@ -115,8 +115,8 @@ namespace Monte
 				if(endResult >= 0)
 				{
 					terminalStateFound = true;
-					//If it is a win add a win
-					if(endResult != rolloutStart.playerIndex) rolloutStart.addWin();
+					//If it is a win add a win0
+					if(endResult == rolloutStart.playerIndex) rolloutStart.addWin();
 					//Else add a loss
 					else rolloutStart.addLoss();
 				} else {

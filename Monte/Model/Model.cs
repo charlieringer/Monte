@@ -19,7 +19,7 @@ namespace Monte
         private int numbHiddenLayers;
         private readonly Random randGen = new Random (1);
         public delegate AIState StateCreator();
-        private double[,] runTimeHiddenLayers;
+        private readonly double[,] runTimeHiddenLayers;
 
         public Model()
         {
@@ -269,9 +269,9 @@ namespace Monte
                 inputs.Add(preprocess(currentState.stateRep));
                 results.Add(currentState.stateScore.Value);
 
-                rewards.Add((currentState.wins > currentState.losses) ? 1 : 0);
+                rewards.Add(currentState.wins > currentState.losses ? 1 : 0);
                 double[,] hiddenLayer = getHiddenLayers(preprocess(currentState.stateRep), currentState.playerIndex);
-                hiddenLayers.Add (hiddenLayer);
+                hiddenLayers.Add(hiddenLayer);
                 playerIndxs.Add(currentState.playerIndex);
                 currentState = currentState.parent;
             }
@@ -280,7 +280,13 @@ namespace Monte
         private double backpropagate(List<int[]> inputs, List<double[,]> hiddenLayers, List<double> output, List<double> rewards, List<int> playerIndxs)
         {
             double totalCost = 0.0;
-            
+
+            for (int i = 0; i < inputs.Count; i++)
+            {
+                totalCost += Math.Abs(output[i] - rewards[i]);
+            }
+            if (totalCost <= 0.0001) return totalCost;
+
             for (int i = 0; i < inputs.Count; i++)
             {
                 //Select the relevant network based on which was used to play this move.
@@ -289,7 +295,7 @@ namespace Monte
                 double[] hiddenCosts = new double[lengthOfInput];
                 //Updates weights between output layer and hidden layer
                 double cost = Math.Abs(output[i] - rewards[i]);
-                totalCost += cost;
+                //totalCost += cost;
                 double sigDir = output[i] * (1 - output[i]);
                 //tot error = cost * sigdir
                 double totalError = cost * sigDir;

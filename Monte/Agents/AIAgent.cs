@@ -1,6 +1,5 @@
 ﻿using System.Threading;
 using System;
-using System.Xml;
 
 namespace Monte
 {
@@ -36,15 +35,16 @@ namespace Monte
 		            aiThread.Start();
 		            aiHasStarted = true;
 		        }
-		        catch
+		        catch(SystemException)
 		        {
-		            Console.WriteLine("Error: Failed to create thread. Retrying...");
+		            //Console.WriteLine("Error: Failed to create thread. Retrying...");
+		            GC.Collect();
+		            GC.WaitForPendingFinalizers();
 		        }
 		    }
 			//Set started to true
 			started = true;
 		}
-
 		//Main algortim
 		protected abstract void mainAlgorithm(AIState initalState);
 	}

@@ -143,7 +143,6 @@ namespace Monte
 	        //Add any remaining parts...
 	        foreach(AIState state in left) returnList.Add(state);
 	        foreach (AIState state in right) returnList.Add(state);
-
 	        return returnList;
 	    }
 	}

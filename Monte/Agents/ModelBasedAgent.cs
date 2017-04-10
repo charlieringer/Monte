@@ -11,17 +11,12 @@ namespace Monte
 			model = _model;
 		}
 
-		public ModelBasedAgent (string modelfile)
+	    protected override void mainAlgorithm(AIState initialState)
 		{
-			model = new Model(modelfile);
-		}
-
-	    protected override void mainAlgorithm(AIState initalState)
-		{
-			List<AIState> children = initalState.generateChildren();
+			List<AIState> children = initialState.generateChildren();
 		    for (int i = 0; i < children.Count; i++)
 		    {
-		        if (children[i].getWinner() == initalState.playerIndex)
+		        if (children[i].getWinner() == (initialState.playerIndex+1)%2)
 		        {
 		            next = children[i];
 		            done = true;
@@ -31,7 +26,8 @@ namespace Monte
 		        children[i].stateScore = thisScore;
 		    }
 		    List<AIState> sortedchildren = AIState.mergeSort(children);
-			next = sortedchildren[sortedchildren.Count-1];
+			//next = sortedchildren[sortedchildren.Count-1];
+		    next = sortedchildren[0];
 			done = true;
 		}
 	}
