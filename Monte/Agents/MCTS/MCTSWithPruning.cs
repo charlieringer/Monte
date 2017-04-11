@@ -55,7 +55,7 @@ namespace Monte
 		    initialState.generateChildren ();
 		    foreach (var child in initialState.children)
 		    {
-		        if (child.getWinner() == (initialState.playerIndex+1)%2)
+		        if (child.getWinner() == child.playerIndex)
 		        {
 		            next = child;
 		            done = true;

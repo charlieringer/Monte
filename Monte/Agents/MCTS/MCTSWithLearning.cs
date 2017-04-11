@@ -22,7 +22,7 @@ namespace Monte
 	        foreach (var child in initialState.children)
 	        {
 	            child.treeNode = true;
-	            if (child.getWinner() >= 0 && child.getWinner() == initialState.playerIndex)
+	            if (child.getWinner() == child.playerIndex)
 	            {
 	                next = child;
 	                done = true;
@@ -181,21 +181,18 @@ namespace Monte
                     return;
                 }
 
-
                 foreach(AIState child in children) if(child.stateScore == null)child.stateScore = model.evaluate(child);
                 children = AIState.mergeSort(children);
 
-                bool childSelected = false;
                 int selectedChild = 0;
 
-                for (int i = children.Count-1; i >= 0; i--)
-                {
+                for (int i = 0; i < children.Count; i++)
+               {
                     Double randNum = randGen.NextDouble();
                     //TODO: Paramiterise the conf threshold.
-                    if (randNum < children[i].stateScore || randNum > 0.8)
+                    if (randNum < (children[i].stateScore) && !(randNum < 0.2))
                     {
                         selectedChild = i;
-                        childSelected = true;
                         break;
                     }
                 }

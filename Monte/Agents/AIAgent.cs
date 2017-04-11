@@ -18,7 +18,6 @@ namespace Monte
 			started = false;
 			done = false;
 			next = null;
-		    //aiThread.Join();
 		}
 
 	    //Kicks off the the main algortims on a sperate thread

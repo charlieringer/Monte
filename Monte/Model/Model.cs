@@ -243,8 +243,9 @@ namespace Monte
 
                 for (int i = children.Count-1; i >= 0; i--)
                 {
-                    Double randNum = randGen.NextDouble();
-                    if (randNum < children[i].stateScore || randNum > confThreshold || children[i].getWinner() == currentState.playerIndex)
+                    double randNum = randGen.NextDouble();
+                    double numberToBeat = children[i].stateScore > confThreshold ? confThreshold : children[i].stateScore.Value;
+                    if (randNum < numberToBeat || children[i].getWinner() == currentState.playerIndex)
                     {
                         selectedChild = i;
                         childSelected = true;
@@ -257,8 +258,8 @@ namespace Monte
                 int endResult = children[selectedChild].getWinner();
                 if(endResult >= 0)
                 {
-                    if (endResult == currentState.playerIndex) currentState.addWin();
-                    else currentState.addLoss();
+                    if (endResult == children[selectedChild].playerIndex) children[selectedChild].addWin();
+                    else children[selectedChild].addLoss();
                     break;
                 }
                 currentState = children[selectedChild];
@@ -398,25 +399,6 @@ namespace Monte
                 }
             }
             return hiddenLayers;
-
-            //Make a new AI thread with this state
-//            aiThread = new Thread (() => mainAlgorithm(initalState));
-//            //And start it.
-//            bool aiHasStarted = false;
-//            //Repeatedly trys to start a new thread (in case the first fails)
-//            while (!aiHasStarted)
-//            {
-//                try
-//                {
-//                    aiThread.Start();
-//                    aiHasStarted = true;
-//                }
-//                catch
-//                {
-//                    Console.WriteLine("Error: Failed to create thread. Retrying...");
-//                }
-//            }
-            //Set started to tru
         }
 
         private double getHiddenNeuron(int i, int j, double[,] hiddenLayers, Network thisPlayer)
