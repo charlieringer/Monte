@@ -89,7 +89,7 @@ namespace Monte
                         //UBT (Upper Confidence Bound 1 applied to trees) function for determining
                         //How much we want to explore vs exploit.
                         //Because we want to change things the constant is configurable.
-                        double exploreScore = exploreWeight * Math.Sqrt(Math.Log(initialState.totGames + 1 / (games + 0.1)));
+                        double exploreScore = exploreWeight * Math.Sqrt((2* Math.Log(initialState.totGames + 1) / (games + 0.1)));
                         //soft pruning
                         double stateScoreValue = softPruneWeight * (1-bestNode.children[i].stateScore.Value);
                         double totalScore = score+ exploreScore+stateScoreValue ;
@@ -121,9 +121,7 @@ namespace Monte
                     bestMove = i;
                 }
             }
-            //Console.WriteLine("MCTS Pruning: Number of Simulations = " + count);
             //Return it.
-            //Console.WriteLine("End Count = : " + initialState.children.Count);
             next = initialState.children[bestMove];
             done = true;
         }
@@ -131,6 +129,13 @@ namespace Monte
         //Rollout function (plays random moves till it hits a termination)
         protected override void rollout(AIState rolloutStart)
         {
+            int rolloutStartResult = rolloutStart.getWinner();
+            if (rolloutStartResult >= 0)
+            {
+                if(rolloutStartResult == rolloutStart.playerIndex) rolloutStart.addWin();
+                else if(rolloutStartResult == (rolloutStart.playerIndex+1)%2) rolloutStart.addLoss();
+                else rolloutStart.addDraw (drawScore);
+            }
             bool terminalStateFound = false;
             //Get the children
             List<AIState> children = rolloutStart.generateChildren();

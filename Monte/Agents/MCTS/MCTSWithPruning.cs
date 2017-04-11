@@ -92,7 +92,7 @@ namespace Monte
 						//UBT (Upper Confidence Bound 1 applied to trees) function for determining
 						//How much we want to explore vs exploit.
 						//Because we want to change things the constant is configurable.
-					    double exploreScore = exploreWeight * Math.Sqrt(Math.Log(initialState.totGames + 1 / (games + 0.1)));
+					    double exploreScore = exploreWeight * Math.Sqrt((2* Math.Log(initialState.totGames + 1) / (games + 0.1)));
 						double totalScore = score+ exploreScore;
 						//Again if the score is better updae
 						if (!(totalScore > bestScore)) continue;
@@ -132,6 +132,14 @@ namespace Monte
 	    //Rollout function (plays random moves till it hits a termination)
 	    protected override void rollout(AIState rolloutStart)
 	    {
+	        int rolloutStartResult = rolloutStart.getWinner();
+	        if (rolloutStartResult >= 0)
+	        {
+	            if(rolloutStartResult == rolloutStart.playerIndex) rolloutStart.addWin();
+	            else if(rolloutStartResult == (rolloutStart.playerIndex+1)%2) rolloutStart.addLoss();
+	            else rolloutStart.addDraw (drawScore);
+	        }
+
 	        bool terminalStateFound = false;
 	        //Get the children
 	        List<AIState> children = rolloutStart.generateChildren();
@@ -154,7 +162,7 @@ namespace Monte
 	            if(endResult >= 0)
 	            {
 	                terminalStateFound = true;
-	                //If it is a win add a win0
+	                //If it is a win add a win
 	                if(endResult == rolloutStart.playerIndex) rolloutStart.addWin();
 	                //Else add a loss
 	                else rolloutStart.addLoss();
@@ -186,7 +194,7 @@ namespace Monte
 		    //Work out how many nodes to remove
 			int numbNodesToRemove = (int)Math.Floor(children.Count * pruningFactor);
 		    //Remove them
-			children.RemoveRange(children.Count-numbNodesToRemove-1, numbNodesToRemove);
+			children.RemoveRange(0, numbNodesToRemove);
 		    //children.RemoveRange(0, numbNodesToRemove);
 		    //Update the children and set unpruned to false.
 		    initState.children = children;

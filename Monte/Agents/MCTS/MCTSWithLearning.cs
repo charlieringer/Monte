@@ -62,7 +62,7 @@ namespace Monte
 	                    //UBT (Upper Confidence Bound 1 applied to trees) function for determining
 	                    //How much we want to explore vs exploit.
 	                    //Because we want to change things the constant is configurable.
-	                    double exploreRating = exploreWeight*Math.Sqrt(Math.Log(initialState.totGames + 1 / (games + 0.1)));
+	                    double exploreRating = exploreWeight * Math.Sqrt((2* Math.Log(initialState.totGames + 1) / (games + 0.1)));
 
 	                    double totalScore = score+exploreRating;
 	                    //Again if the score is better updae
@@ -97,7 +97,7 @@ namespace Monte
 	        done = true;
 	    }
 
-//		//Rollout function (plays random moves till it hits a termination)
+		//Rollout function (plays random moves till it hits a termination)
 //		protected override void rollout(AIState rolloutStart)
 //		{
 //			bool terminalStateFound = false;
@@ -155,16 +155,24 @@ namespace Monte
 //				}
 //			}
 //			//Reset the children as these are not 'real' children but just ones for the roll out.
-//			foreach( AIState child in rolloutStart.children)
-//			{
-//				child.children = new List<AIState>();
-//			}
+//            //This node is now expanded so set tree node to true
+//            foreach( AIState child in rolloutStart.children)
+//            {
+//                child.treeNode = true;
+//            }
 //		}
 //	}
 
         //Rollout function (plays random moves till it hits a termination)
         protected override void rollout(AIState rolloutStart)
         {
+            int rolloutStartResult = rolloutStart.getWinner();
+            if (rolloutStartResult >= 0)
+            {
+                if(rolloutStartResult == rolloutStart.playerIndex) rolloutStart.addWin();
+                else if(rolloutStartResult == (rolloutStart.playerIndex+1)%2) rolloutStart.addLoss();
+                else rolloutStart.addDraw (drawScore);
+            }
             bool terminalStateFound = false;
             //Get the children
             List<AIState> children = rolloutStart.generateChildren();
@@ -188,9 +196,10 @@ namespace Monte
 
                 for (int i = 0; i < children.Count; i++)
                {
-                    Double randNum = randGen.NextDouble();
-                    //TODO: Paramiterise the conf threshold.
-                    if (randNum < (children[i].stateScore) && !(randNum < 0.2))
+                   Double randNum = randGen.NextDouble();
+                   //TODO: Paramiterise the conf threshold.
+                   double numberToBeat = children[i].stateScore > 0.2 ? 0.2 : children[i].stateScore.Value;
+                   if (randNum < numberToBeat)
                     {
                         selectedChild = i;
                         break;
