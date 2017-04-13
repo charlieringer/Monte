@@ -166,7 +166,7 @@ namespace Monte
                 double avgCost = trainingEpisode(sc, gamesPerEpisode);
                 //Output this cost (so we can see if our cost is reducing
                 Console.WriteLine("Training Episode " + (i+1) + " of " + episodes +" complete. Avg cost: " + avgCost);
-                if (avgCost <= 0.0001) break;
+               // if (avgCost <= 0.0001) break;
             }
 
             //Once done we output it to a file which is the time it was made

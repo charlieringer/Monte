@@ -91,8 +91,8 @@ namespace Monte
                         //Because we want to change things the constant is configurable.
                         double exploreScore = exploreWeight * Math.Sqrt((2* Math.Log(initialState.totGames + 1) / (games + 0.1)));
                         //soft pruning
-                        double stateScoreValue = softPruneWeight * (1-bestNode.children[i].stateScore.Value);
-                        double totalScore = score+ exploreScore+stateScoreValue ;
+                        //double stateScoreValue = softPruneWeight * (bestNode.children[i].stateScore.Value);
+                        double totalScore = score + exploreScore;//+stateScoreValue ;
                         //Again if the score is better updae
                         if (!(totalScore > bestScore)) continue;
                         bestScore = totalScore;

@@ -50,7 +50,7 @@ namespace Monte
                         //Scores as per the previous part
                         double wins = bestNode.children[i].wins;
                         double games = bestNode.children[i].totGames;
-                        double score = (games > 0) ? score = wins / games : 1.0;
+                        double score = (games > 0) ? wins / games : 1.0;
 
                         //UBT (Upper Confidence Bound 1 applied to trees) function for determining
                         //How much we want to explore vs exploit.

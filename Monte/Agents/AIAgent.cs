@@ -1,5 +1,5 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
+﻿//using System.Threading.Tasks;
+using System.Threading;
 using System;
 
 namespace Monte
@@ -7,7 +7,8 @@ namespace Monte
 	public abstract class AIAgent
 	{
 		protected Random randGen = new Random ();
-		protected Task aiThread;
+		//protected Task aiTask;
+	    protected Thread aiTask;
 		public bool done;
 		public bool started;
 		public AIState next;
@@ -24,7 +25,8 @@ namespace Monte
 		public void run(AIState initalState)
 		{
 			//Make a new AI thread with this state
-			aiThread = new Task (() => mainAlgorithm(initalState));
+			//aiTask = new Task (() => mainAlgorithm(initalState));
+		    aiTask = new Thread (() => mainAlgorithm(initalState));
 			//And start it.
 		    bool aiHasStarted = false;
 		    //Repeatedly trys to start a new thread (in case the first fails)
@@ -32,16 +34,17 @@ namespace Monte
 		    {
 		        try
 		        {
-		            aiThread.Start();
+		            aiTask.Start();
 		            aiHasStarted = true;
 		        }
 		        catch(SystemException)
 		        {
-		            //Console.WriteLine("Error: Failed to create thread. Retrying...");
-		            GC.Collect();
-		            GC.WaitForPendingFinalizers();
+		           Console.WriteLine("Error: Failed to start AI task. Retrying...");
+
 		        }
 		    }
+		    GC.Collect();
+		    GC.WaitForPendingFinalizers();
 			//Set started to true
 			started = true;
 		}
