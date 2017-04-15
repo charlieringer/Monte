@@ -13,9 +13,9 @@ namespace Monte
                 int otherPlayer = (initialState.playerIndex + 1) % 2;
                 if (childWinner == otherPlayer)
                 {
-                    //next = children[i];
-                    //done = true;
-                    //return;
+                    next = children[i];
+                    done = true;
+                    return;
                 }
             }
 
