@@ -8,10 +8,46 @@ namespace Monte
 	public class MCTSWithLearning : MCTSMasterAgent
 	{
 		private readonly Model model;
+	    private double epsilon;
 
-		public MCTSWithLearning (int _numbSimulations, double _exploreWeight, int _maxRollout, Model _model, double _drawScore): base(_numbSimulations, _exploreWeight, _maxRollout, _drawScore) {  model = _model; }
-		public MCTSWithLearning (Model _model) { model = _model; }
-		public MCTSWithLearning (Model _model, String settingsFile) : base (settingsFile) { model = _model; }
+
+	    public MCTSWithLearning (int _numbSimulations, double _exploreWeight, int _maxRollout, Model _model, double _epsilon, double _drawScore)
+	        : base( _numbSimulations, _exploreWeight, _maxRollout, _drawScore)
+	    {
+	        model = _model;
+	        epsilon = _epsilon;
+	    }
+
+	    public MCTSWithLearning (Model _model)
+	    {
+	        model = _model;
+	        parseXML("Assets/Monte/DefaultSettings.xml");
+	    }
+
+	    public MCTSWithLearning (Model _model, String settingsFile) : base (settingsFile)
+	    {
+	        model = _model;
+	        parseXML(settingsFile);
+	    }
+
+	    void parseXML(String settingsFile)
+	    {
+
+	        try
+	        {
+	            XmlDocument settings = new XmlDocument();
+	            settings.Load(settingsFile);
+	            XmlNode node = settings.SelectSingleNode("descendant::RolloutSettins");
+	            epsilon = Double.Parse(node.Attributes.GetNamedItem("Epsilon").Value);
+	        }
+	        catch
+	        {
+	            epsilon = 0.2;
+	            Console.WriteLine("Error reading settings file when constructing MCTSWithLearning. Default settings values used (Epsilon = 0.2).");
+	            Console.WriteLine("File:" + settingsFile);
+	        }
+
+	    }
 
 		//Main MCTS algortim
 	    protected override void mainAlgorithm(AIState initialState)
@@ -97,72 +133,6 @@ namespace Monte
 	        done = true;
 	    }
 
-		//Rollout function (plays random moves till it hits a termination)
-//		protected override void rollout(AIState rolloutStart)
-//		{
-//			bool terminalStateFound = false;
-//			//Get the children
-//			List<AIState> children = rolloutStart.generateChildren();
-//
-//			int count = 0;
-//			while(!terminalStateFound)
-//			{
-//				//Loop through till a terminal state is found
-//				count++;
-//			    //If max roll out is hit or no childern were generated
-//				if (count >= maxRollout || children.Count == 0) {
-//					//record a draw
-//					rolloutStart.addDraw (drawScore);
-//					return;
-//				}
-//
-//				double totalScore = 0.0f;
-//				List<double> scores = new List<double> ();
-//
-//				foreach(AIState child in children)
-//				{
-//					if (child.stateScore == null) {
-//						child.stateScore = model.evaluate(child);
-//					}
-//					totalScore += child.stateScore.Value;
-//					scores.Add (child.stateScore.Value);
-//				}
-//				double randomPoint = randGen.NextDouble() * totalScore;
-//				double runningTotal = 0.0f;
-//				int index = 0;
-//				for (int i = 0; i < scores.Count; i++) {
-//					runningTotal += scores [i];
-//					if (runningTotal >= randomPoint) {
-//						index = i;
-//						break;
-//					}
-//				}
-//				//and see if that node is terminal
-//				int endResult = children[index].getWinner ();
-//				if(endResult >= 0)
-//				{
-//					terminalStateFound = true;
-//					//If it is a win add a win
-//					if(endResult != rolloutStart.playerIndex) rolloutStart.addWin();
-//					//Else add a loss
-//					else rolloutStart.addLoss();
-//				} else {
-//					//Otherwise select that nodes as the childern and continue
-//					children = children [index].generateChildren();
-//					if (children.Count == 0) {
-//						break;
-//					}
-//				}
-//			}
-//			//Reset the children as these are not 'real' children but just ones for the roll out.
-//            //This node is now expanded so set tree node to true
-//            foreach( AIState child in rolloutStart.children)
-//            {
-//                child.treeNode = true;
-//            }
-//		}
-//	}
-
         //Rollout function (plays random moves till it hits a termination)
         protected override void rollout(AIState rolloutStart)
         {
@@ -189,21 +159,18 @@ namespace Monte
                     return;
                 }
 
-                foreach(AIState child in children) if(child.stateScore == null)child.stateScore = model.evaluate(child);
-                children = AIState.mergeSort(children);
+                int selectedChild = children.Count-1;
 
-                int selectedChild = 0;
-
-                for (int i = 0; i < children.Count; i++)
-               {
-                   Double randNum = randGen.NextDouble();
-                   //TODO: Paramiterise the conf threshold.
-                   double numberToBeat = children[i].stateScore > 0.2 ? 0.2 : children[i].stateScore.Value;
-                   if (randNum < numberToBeat)
-                    {
-                        selectedChild = i;
-                        break;
-                    }
+                //epsilon greedy move selection.
+                if (randGen.NextDouble() < epsilon)
+                {
+                    //choose best move (which is pos 0 in the sorted list)
+                    foreach(AIState child in children) if(child.stateScore == null)child.stateScore = model.evaluate(child);
+                    children = AIState.mergeSort(children);
+                }
+                else
+                {
+                    selectedChild = randGen.Next(children.Count);
                 }
 
                 //and see if that node is terminal

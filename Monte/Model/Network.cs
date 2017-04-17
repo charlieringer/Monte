@@ -20,82 +20,103 @@ namespace Monte
         //indx of player (for debugging)
         private int pIndx;
         //Random number gen
-        private Random randGen = new Random (1);
+        private readonly Random randGen = new Random ();
 
-        public Network(int _pIndx)
-        {
-            pIndx = _pIndx;
-        }
-
+        //Constructor to make a new, untrained, network
         public Network(int lengthOfInput, int numbHiddenLayers, int _pIndx)
         {
+            //Init a network of weights
             initWeights(lengthOfInput, numbHiddenLayers);
+            //And store which player this relates to
             pIndx = _pIndx;
         }
 
+        //Init all the weights
         private void initWeights(int _lengthOfInput, int _numbHiddenLayers)
         {
+            //Store these values (for later)
             numbHiddenLayers = _numbHiddenLayers;
             lengthOfInput = _lengthOfInput;
-            if (_numbHiddenLayers == 0) _numbHiddenLayers = 1;
+            //Safety check. There has to be at least 1 layer.
+            if (_numbHiddenLayers < 1)
+            {
+                Console.WriteLine("Monte: Model settings has less than 1 layer. 1 layer is the minimum so setting the number of layers to 1.");
+                _numbHiddenLayers = 1;
+            }
+            //allocate the arrays for all of the weights
             wH = new double[_numbHiddenLayers, _lengthOfInput * _lengthOfInput];
-
-            //w2 is double the length of input. Why? Because first first half (= to length of input) corresponds to P1 and the rest to P2.
             wOut = new double[_lengthOfInput];
-
+            //And bias weights
             biasH = new double[_numbHiddenLayers,_lengthOfInput];
             biasOut = 0.0;
+            //Loop through all of these newly allocated weights
             for(int i = 0; i < _numbHiddenLayers; i++)
             {
-                for (int j = 0; j < _lengthOfInput * _lengthOfInput; j++)
-                {
-                    wH[i, j] = getNextWeight(-1 / Math.Sqrt(_lengthOfInput), 1 / Math.Sqrt(_lengthOfInput));}
+                //And init the next weight (between -1/sqrt{inputlength} and 1/sqrt{inputlength}
+                for (int j = 0; j < _lengthOfInput * _lengthOfInput; j++) wH[i, j] = getNextWeight(-1 / Math.Sqrt(_lengthOfInput), 1 / Math.Sqrt(_lengthOfInput));
                 for (int j = 0; j < _lengthOfInput; j++){ biasH[i,j] = getNextWeight(-1 / Math.Sqrt(_lengthOfInput), 1 / Math.Sqrt(_lengthOfInput));}
             }
+            //Init the weights for the output layer as well.
             for (int i = 0; i < _lengthOfInput; i++){ wOut[i] = getNextWeight(-1 / Math.Sqrt(_lengthOfInput), 1 / Math.Sqrt(_lengthOfInput));}
             biasOut = getNextWeight(-1 / Math.Sqrt(_lengthOfInput), 1 / Math.Sqrt(_lengthOfInput));
         }
 
+        //Gets a weight from a uniform distribution between two bounds
         private double getNextWeight(double lower, double upper)
         {
             return randGen.NextDouble() * (upper - lower) + lower;
         }
 
+        //function to write the network to _AppDomain supplied file
         public void writeToFile(StreamWriter writer)
         {
+            //Loop through all layers
             for (int i = 0; i < numbHiddenLayers; i++)
             {
+                //Write all wieghts to file
                 for (int j = 0; j < lengthOfInput * lengthOfInput; j++) writer.WriteLine(wH[i, j]);
+                //Then all of the bias weights
                 for (int j = 0; j < lengthOfInput; j++) writer.WriteLine(biasH[i, j]);
             }
+            //Next all of the output weights
             for (int i = 0; i < lengthOfInput; i++) writer.WriteLine(wOut[i]);
+            //And finally the output bias
             writer.WriteLine(biasOut);
         }
 
+        //Reads for the suppiled string[] (which came from a a file).
         public int readFromFile(string[] lines, int startLine)
         {
+            //The start line is used to start at a certain point in the file
             int counter = startLine;
+            //Loop thorugh all of the hidden layers
             for (int i = 0; i < numbHiddenLayers; i++)
             {
+                //and ever weight in the layer
                 for (int j = 0; j < lengthOfInput * lengthOfInput; j++)
                 {
+                    //Get the value
                     wH[i, j] = double.Parse(lines[counter]);
+                    //And increment the count
                     counter++;
                 }
+                //Then for ever bias weight
                 for (int j = 0; j < lengthOfInput; j++)
                 {
+                    //Do the same
                     biasH[i, j] = double.Parse(lines[counter]);
                     counter++;
                 }
             }
+            //Finally parse the weights for the output layer
             for (int i = 0; i < lengthOfInput; i++)
             {
                 wOut[i] = double.Parse(lines[counter]);
                 counter++;
             }
             biasOut = double.Parse(lines[counter]);
+            //Return the counter (so we know how far through the file this took us).
             return ++counter;
         }
-
     }
 }

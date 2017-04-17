@@ -1,16 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Settings>
 	<MCTSSettings 
-		NumberOfSimulations="1000" 
+		Itterations="500" 
 		ExploreWeight="1.45" 
 		MaxRollout="64" 
 		DrawScore="0.5">
 	</MCTSSettings>
 
 	<PruningSettings 
-		PruneWorsePercent="0.1"
-		SoftPruneWeight="0.1">	
+		PruneWorsePercent="0.33"
+		SoftPruneWeight="0.25">	
 	</PruningSettings>
+
+	<RolloutSettins
+		Epsilon="0.2">
+	</RolloutSettins>
 	
 	<DeepLearningSettings 
 		Alpha="0.01" 

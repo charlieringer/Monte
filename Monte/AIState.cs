@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.Collections.Generic;
 
 namespace Monte
 {
@@ -8,6 +6,7 @@ namespace Monte
 	//This is for the Client to implement
 	public abstract class AIState
 	{
+	    //Used so that we do not prune the same part of the tree twice (for MCTSWithPruning)
 	    public bool unpruned = true;
 		//Tracks Wins
 		public double wins { get; set; }
@@ -15,11 +14,11 @@ namespace Monte
 		public int losses { get; set; }
 		//Tracks total games played
 		public int totGames { get; set; }
-		//Which player is the current playing in this state
+		//Which player caused that state
 		public int playerIndex { get; set; }
 		//How deep in the tree this is
 		public int depth { get; set; }
-		// It's parent
+		//It's parent
 		public AIState parent { get; set; }
 		//List of child nodes
 		public List<AIState> children { get; set; }
@@ -27,11 +26,13 @@ namespace Monte
 		public int[] stateRep { get; set; }
 		//The score which is derived from the learner and represents the score for the state
 		public double? stateScore { get; set; }
-
+	    //Number of different piece types
+	    public int numbPieceTypes;
+        //Used so that tree nodes are not remade (which is expensive due to evaluation) for MCTSWithLearning
 	    public bool treeNode = false;
 
+	    //All of the constructors
 	    protected AIState(){}
-
 	    protected AIState(int pIndex, AIState _parent, int _depth)
 		{
 			playerIndex = pIndex;
@@ -43,7 +44,7 @@ namespace Monte
 			stateScore = null;
 		}
 
-		protected AIState(int pIndex, AIState _parent, int _depth, int[] _stateRep)
+		protected AIState(int pIndex, AIState _parent, int _depth, int[] _stateRep, int _numbPieceTypes)
 		{
 			playerIndex = pIndex;
 			parent = _parent;
@@ -52,28 +53,7 @@ namespace Monte
 			children = new List<AIState> ();
 			wins = losses = totGames = 0;
 			stateScore = null;
-		}
-
-		protected AIState(int pIndex)
-		{
-			playerIndex = pIndex;
-			parent = null;
-			depth = 0;
-			stateRep = null;
-			children = new List<AIState> ();
-			wins = losses = totGames = 0;
-			stateScore = null;
-		}
-
-		protected AIState(int pIndex, int[] _stateRep)
-		{
-			playerIndex = pIndex;
-			parent = null;
-			depth = 0;
-			stateRep = _stateRep;
-			children = new List<AIState> ();
-			wins = losses = totGames = 0;
-			stateScore = null;
+		    numbPieceTypes = _numbPieceTypes;
 		}
 
 		//For adding a win
@@ -104,21 +84,24 @@ namespace Monte
 		//For checking is a node is terminal (and which player won)ss
 		public abstract int getWinner ();
 
+	    //Used to sort a list of AIState based on their stateScore.
 	    public static List<AIState> mergeSort(List<AIState> startList)
 	    {
+	        //If the list is empty of contains 1 items is is already sorted.
 	        if (startList.Count <= 1) return startList;
-
-
+	        //Piviot is the mid point
 	        int pivot = startList.Count / 2;
+	        //Made 2 new lists, one for left and one for right
 	        List<AIState> left = new List<AIState>();
 	        List<AIState> right = new List<AIState>();
-
+            //Everything left of the pivot is added to left
 	        for (int i = 0; i < pivot; i++) left.Add(startList[i]);
+	        //And everything right is added to the right list
 	        for (int i = pivot; i < startList.Count; i++) right.Add(startList[i]);
-
+            //Then sort them
 	        left = mergeSort(left);
 	        right = mergeSort(right);
-
+            //And merge them
 	        return merge(left, right);
 	    }
 

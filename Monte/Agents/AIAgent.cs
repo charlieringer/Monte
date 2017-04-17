@@ -6,9 +6,8 @@ namespace Monte
 {
 	public abstract class AIAgent
 	{
-		protected Random randGen = new Random ();
-		//protected Task aiTask;
-	    protected Thread aiTask;
+		protected readonly Random randGen = new Random ();
+	    private Thread aiTask;
 		public bool done;
 		public bool started;
 		public AIState next;
@@ -25,30 +24,31 @@ namespace Monte
 		public void run(AIState initalState)
 		{
 			//Make a new AI thread with this state
-			//aiTask = new Task (() => mainAlgorithm(initalState));
 		    aiTask = new Thread (() => mainAlgorithm(initalState));
-			//And start it.
 		    bool aiHasStarted = false;
-		    //Repeatedly trys to start a new thread (in case the first fails)
+		    //Repeatedly try to start a new thread (in case the first fails)
 		    while (!aiHasStarted)
 		    {
 		        try
 		        {
+		            //Try to start the thread..
 		            aiTask.Start();
 		            aiHasStarted = true;
 		        }
+		        //Catch any failure
 		        catch(SystemException)
 		        {
-		           Console.WriteLine("Error: Failed to start AI task. Retrying...");
-
+		            Console.WriteLine("Monte Error: Failed to start AI task. Retrying...");
+		            //Force a garbage collection here in case there is memory we can clean up
+		            //(so the thread creation does not fail)
+		            GC.Collect();
+		            GC.WaitForPendingFinalizers();
 		        }
 		    }
-		    GC.Collect();
-		    GC.WaitForPendingFinalizers();
 			//Set started to true
 			started = true;
 		}
-		//Main algortim
+		//Main algortim which is implemented by the various agents.
 		protected abstract void mainAlgorithm(AIState initalState);
 	}
 }

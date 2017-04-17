@@ -5,7 +5,6 @@ namespace Monte
 {
     public class MCTSSimpleAgent : MCTSMasterAgent
     {
-        public MCTSSimpleAgent(){}
         public MCTSSimpleAgent(string file):base(file){}
         public MCTSSimpleAgent (int _numbSimulations, double _exploreWeight, int _maxRollout, double _drawScore) : base(_numbSimulations, _exploreWeight, _maxRollout, _drawScore){}
 
@@ -85,7 +84,6 @@ namespace Monte
                     bestMove = i;
                 }
             }
-            //Console.WriteLine("MCTS Simple: Number of Simulations = " + count);
             next = initialState.children[bestMove];
             done = true;
         }
