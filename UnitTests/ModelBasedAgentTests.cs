@@ -8,6 +8,7 @@ namespace UnitTests
 {
     public class ModelBasedAgentTests
     {
+        [Test]
         public void ModelBasedAgentTests_Init_NoModel()
         {
             ModelBasedAgent mbAgent = new ModelBasedAgent(null);

@@ -50,7 +50,7 @@ namespace Monte
             {
                 //If the file is neither a model file or an XML file just make an emtpy model with the default settings.
                 parseXML("Assets/Monte/DefaultSettings.xml");
-                Console.WriteLine("Monte Error: File supplied was neither a model or xml file. Constucting an empty model with default settings");
+                Console.WriteLine("Monte: Error: File supplied was neither a model or xml file. Constucting an empty model with default settings");
             }
 
         }
@@ -90,7 +90,7 @@ namespace Monte
                 normVal = 0.05;
                 confThreshold = 0.8;
                 drawReward = 0.5;
-                Console.WriteLine("Monte Error: could not find file when constructing Model. Default settings values used (Alpha = 0.01, MaxForwardItters=64, NumbHiddenLayers=1, Normalisation=0.05, DrawSore=0.5, ConfidenceThreshold=0.8). File:" + settingsFile);
+                Console.WriteLine("Monte: Error: Could not find file when constructing Model. Default settings values used (Alpha = 0.01, MaxForwardItters=64, NumbHiddenLayers=1, Normalisation=0.05, DrawSore=0.5, ConfidenceThreshold=0.8). File:" + settingsFile);
             } catch
             {
                 //Also if parseing fails default values are used
@@ -130,12 +130,12 @@ namespace Monte
             catch (FileNotFoundException)
             {
                 //If the file could not be found error
-                Console.WriteLine("Error, could not find file. Could not initalise model. Please check file/filepath + File:" + modelfile);
+                Console.WriteLine("Monte: Error, could not find file. Could not initalise model. Please check file/filepath. File:" + modelfile);
             }
             catch
             {
                 //Likewise if the file is malformed
-                Console.WriteLine("Error reading model file, perhaps it is malformed. Could not initalise model. File path:" + modelfile);
+                Console.WriteLine("Monte: Error reading model file, perhaps it is malformed. Could not initalise model. File path:" + modelfile);
             }
 
         }
