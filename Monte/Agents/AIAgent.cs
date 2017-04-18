@@ -40,7 +40,7 @@ namespace Monte
 		        {
 		            Console.WriteLine("Monte Error: Failed to start AI task. Retrying...");
 		            //Force a garbage collection here in case there is memory we can clean up
-		            //(so the thread creation does not fail)
+		            //(so the thread creation does not fail next time)
 		            GC.Collect();
 		            GC.WaitForPendingFinalizers();
 		        }

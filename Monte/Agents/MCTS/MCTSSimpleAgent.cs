@@ -3,8 +3,10 @@ using System.Collections.Generic;
 
 namespace Monte
 {
+    //The most basic MCTS Agent. Uses a simple UCT move selection policy and light, random, rollouts
     public class MCTSSimpleAgent : MCTSMasterAgent
     {
+        //Constructors
         public MCTSSimpleAgent(string file):base(file){}
         public MCTSSimpleAgent (int _numbSimulations, double _exploreWeight, int _maxRollout, double _drawScore) : base(_numbSimulations, _exploreWeight, _maxRollout, _drawScore){}
 
@@ -13,30 +15,35 @@ namespace Monte
         {
             //Make the intial children
             initialState.generateChildren ();
-             foreach (var child in initialState.children)
-             {
-                 if (child.getWinner() == child.playerIndex)
-                 {
-                     next = child;
-                     done = true;
-                     return;
-                 }
-             }
-            //if no childern are generated
+            //Loop through all of them
+            foreach (var child in initialState.children)
+            {
+                //If any of them are winning moves
+                if (child.getWinner() == child.playerIndex)
+                {
+                    //Just make that move and save on all of the comuptation
+                    next = child;
+                    done = true;
+                    return;
+                }
+            }
+            //If no childern are generated
             if (initialState.children.Count == 0)
             {
                 //Report this error and return.
-                Console.WriteLine("Error: State supplied has no children.");
+                Console.WriteLine("Monte: Error: State supplied has no children.");
                 next = null;
                 done = true;
                 return;
             }
-
+            //Start a count
             int count = 0;
+            //Whilst time allows
             while(count < numbSimulations)
             {
+                //Increment the count
                 count++;
-                //Once done set the best child to this
+                //Start at the inital state
                 AIState bestNode = initialState;
                 //And loop through it's child
                 while(bestNode.children.Count > 0)
@@ -44,39 +51,38 @@ namespace Monte
                     //Set the scores as a base line
                     double bestScore = -1;
                     int bestIndex = -1;
-
-                    for(int i = 0; i < bestNode.children.Count; i++){
-                        //Scores as per the previous part
+                    //Loop thorugh all of the children
+                    for(int i = 0; i < bestNode.children.Count; i++)
+                    {
+                        //win score is basically just wins/games unless no games have been played, then it is 1
                         double wins = bestNode.children[i].wins;
                         double games = bestNode.children[i].totGames;
                         double score = (games > 0) ? wins / games : 1.0;
 
-                        //UBT (Upper Confidence Bound 1 applied to trees) function for determining
-                        //How much we want to explore vs exploit.
+                        //UBT (Upper Confidence Bound 1 applied to trees) function balances explore vs exploit.
                         //Because we want to change things the constant is configurable.
                         double exploreRating = exploreWeight*Math.Sqrt((2* Math.Log(initialState.totGames + 1) / (games + 0.1)));
-
+                        //Total score is win score + explore socre
                         double totalScore = score+exploreRating;
-                        //Again if the score is better updae
-                        if (totalScore > bestScore){
-                            bestScore = totalScore;
-                            bestIndex = i;
-                        }
+                        //If the score is better update
+                        if (!(totalScore > bestScore)) continue;
+                        bestScore = totalScore;
+                        bestIndex = i;
                     }
-                    //And set the best child for the next iteration
+                    //Set the best child for the next iteration
                     bestNode = bestNode.children[bestIndex];
                 }
-                //Then roll out that child.
+                //Finally roll out this node.
                 rollout(bestNode);
             }
 
-            //Once we get to this point we have worked out the best move so just need to return it
+            //Onces all the simulations have taken place we select the best move...
             int mostGames = -1;
             int bestMove = -1;
-            //Loop through all childern
+            //Loop through all children
             for(int i = 0; i < initialState.children.Count; i++)
             {
-                //find the one that was played the most (this is the best move)
+                //Find the one that was played the most (this is the best move as we are selecting the robust child)
                 int games = initialState.children[i].totGames;
                 if(games >= mostGames)
                 {
@@ -84,16 +90,20 @@ namespace Monte
                     bestMove = i;
                 }
             }
+            //Set that child to the next move
             next = initialState.children[bestMove];
+            //And we are done
             done = true;
         }
 
         //Rollout function (plays random moves till it hits a termination)
         protected override void rollout(AIState rolloutStart)
         {
+            //If the rollout start is a terminal state
             int rolloutStartResult = rolloutStart.getWinner();
             if (rolloutStartResult >= 0)
             {
+                //Add a win is it is a win, or a loss is a loss or otherwise a draw
                 if(rolloutStartResult == rolloutStart.playerIndex) rolloutStart.addWin();
                 else if(rolloutStartResult == (rolloutStart.playerIndex+1)%2) rolloutStart.addLoss();
                 else rolloutStart.addDraw (drawScore);
@@ -120,7 +130,7 @@ namespace Monte
                 if(endResult >= 0)
                 {
                     terminalStateFound = true;
-                    //If it is a win add a win0
+                    //If it is a win add a win
                     if(endResult == rolloutStart.playerIndex) rolloutStart.addWin();
                     //Else add a loss
                     else rolloutStart.addLoss();

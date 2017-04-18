@@ -4,13 +4,18 @@ using System.IO;
 
 namespace Monte
 {
+    //Base class for all the MCTS agents
     public abstract class MCTSMasterAgent : AIAgent
     {
+        //Numb simualtions = number to games to simulate before the best most is selected
         protected int numbSimulations;
+        //This effects how much we weight the UCT funtion
         protected double exploreWeight;
+        //That value to assign a draw in the rollout
         protected double drawScore;
+        //How far do we rollout before we call it a draw
         protected int maxRollout;
-
+        //Constructors for the Agent
         protected MCTSMasterAgent() { parseXML("Assets/Monte/DefaultSettings.xml"); }
         protected MCTSMasterAgent (string fileName) { parseXML(fileName); }
         protected MCTSMasterAgent(int _numbSimulations, double _exploreWeight, int _maxRollout, double _drawScore)
@@ -20,9 +25,10 @@ namespace Monte
             maxRollout = _maxRollout;
             drawScore = _drawScore;
         }
-
+        //Reads the settings files and sets various values
         private void parseXML(string filePath)
         {
+            //Try to read it.
             try
             {
                 XmlDocument settings = new XmlDocument();
@@ -37,29 +43,28 @@ namespace Monte
                 maxRollout = int.Parse(node.Attributes.GetNamedItem("MaxRollout").Value);
                 drawScore = double.Parse(node.Attributes.GetNamedItem("DrawScore").Value);
             }
+            //If the file was not found
             catch (FileNotFoundException)
             {
-                numbSimulations = 5000000;
+                numbSimulations = 500;
                 exploreWeight = 1.45;
                 maxRollout = 64;
                 drawScore = 0.5;
-                Console.WriteLine(
-                    "Error, could not find file when constructing MCTS base class. Default settings values used (ThinkingTime = 0.25 secs, ExploreWeight = 1.45, MaxRollout = 64, DrawScore = 0.5).");
-                Console.WriteLine("File:" + filePath);
+                Console.WriteLine("Monte Error: could not find file when constructing MCTS base class. Default settings values used (NumberOfSimulations = 500, ExploreWeight = 1.45, MaxRollout = 64, DrawScore = 0.5). File:" + filePath);
             }
+            //Or it was malformed
             catch
             {
-                numbSimulations = 1000;
+                numbSimulations = 500;
                 exploreWeight = 1.45;
                 maxRollout = 64;
                 drawScore = 0.5;
                 Console.WriteLine(
-                    "Error reading settings file when constructing MCTS base class, perhaps it is malformed. Default settings values used (NumberOfSimulations = 1000, ExploreWeight = 1.45, MaxRollout = 64, DrawScore = 0.5).");
-                Console.WriteLine("File:" + filePath);
+                    "Monte, Error reading settings file when constructing MCTS base class, perhaps it is malformed. Default settings values used (NumberOfSimulations = 500, ExploreWeight = 1.45, MaxRollout = 64, DrawScore = 0.5). File:" + filePath);
             }
         }
 
-        //Rollout function (plays random moves till it hits a termination)
+        //Rollout function (to be written by the implementing agent)
         protected abstract void rollout(AIState rolloutStart);
     }
 }

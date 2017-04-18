@@ -1,27 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Xml;
 
 namespace Monte
 {
 	public class MCTSWithLearning : MCTSMasterAgent
 	{
+	    //Model used during rollouts
 		private readonly Model model;
+	    //epsilon value used in rollout
 	    private double epsilon;
 
 
+	    //Constructors
 	    public MCTSWithLearning (int _numbSimulations, double _exploreWeight, int _maxRollout, Model _model, double _epsilon, double _drawScore)
 	        : base( _numbSimulations, _exploreWeight, _maxRollout, _drawScore)
 	    {
 	        model = _model;
 	        epsilon = _epsilon;
-	    }
-
-	    public MCTSWithLearning (Model _model)
-	    {
-	        model = _model;
-	        parseXML("Assets/Monte/DefaultSettings.xml");
 	    }
 
 	    public MCTSWithLearning (Model _model, String settingsFile) : base (settingsFile)
@@ -32,7 +28,7 @@ namespace Monte
 
 	    void parseXML(String settingsFile)
 	    {
-
+            //Tryi to parse the file
 	        try
 	        {
 	            XmlDocument settings = new XmlDocument();
@@ -40,13 +36,14 @@ namespace Monte
 	            XmlNode node = settings.SelectSingleNode("descendant::RolloutSettins");
 	            epsilon = Double.Parse(node.Attributes.GetNamedItem("Epsilon").Value);
 	        }
+	        //It it fails
 	        catch
 	        {
+	            //Use default values
 	            epsilon = 0.2;
-	            Console.WriteLine("Error reading settings file when constructing MCTSWithLearning. Default settings values used (Epsilon = 0.2).");
-	            Console.WriteLine("File:" + settingsFile);
+	            //And Error
+	            Console.WriteLine("Monte: Error reading settings file when constructing MCTSWithLearning. Default settings values used (Epsilon = 0.2). File:" + settingsFile);
 	        }
-
 	    }
 
 		//Main MCTS algortim
@@ -54,12 +51,17 @@ namespace Monte
 	    {
 	        //Make the intial children
 	        initialState.generateChildren ();
+	        //And set the root as a tree node
 	        initialState.treeNode = true;
+	        //Loop through all the children
 	        foreach (var child in initialState.children)
 	        {
+	            //Set them as a tree node
 	            child.treeNode = true;
+	            //If any of them are winning moves
 	            if (child.getWinner() == child.playerIndex)
 	            {
+	                //Just make that move and save on all of the comuptation
 	                next = child;
 	                done = true;
 	                return;
@@ -69,18 +71,19 @@ namespace Monte
 	        if (initialState.children.Count == 0)
 	        {
 	            //Report this error and return.
-	            Console.WriteLine("Error: State supplied has no childern.");
+	            Console.WriteLine("Monte: Error: State supplied has no childern.");
 	            next = null;
 	            done = true;
 	            return;
 	        }
-
+            //Start a count
 	        int count = 0;
-	        //while (latestTick-startTime < thinkingTime)
+	        //Whilst time allows
 	        while (count < numbSimulations)
 	        {
+	            //Increment the count
 	            count++;
-	            //Once done set the best child to this
+	            //Start at the inital state
 	            AIState bestNode = initialState;
 	            //And loop through it's child
 	            while(bestNode.children.Count > 0)
@@ -88,39 +91,38 @@ namespace Monte
 	                //Set the scores as a base line
 	                double bestScore = -1;
 	                int bestIndex = -1;
-
-	                for(int i = 0; i < bestNode.children.Count; i++){
-	                    //Scores as per the previous part
+                    //Loop thorugh all of the children
+	                for(int i = 0; i < bestNode.children.Count; i++)
+	                {
+	                    //win score is basically just wins/games unless no games have been played, then it is 1
 	                    double wins = bestNode.children[i].wins;
 	                    double games = bestNode.children[i].totGames;
-	                    double score = (games > 0) ? score = wins / games : 1.0;
+	                    double score = (games > 0) ? wins / games : 1.0;
 
-	                    //UBT (Upper Confidence Bound 1 applied to trees) function for determining
-	                    //How much we want to explore vs exploit.
+	                    //UBT (Upper Confidence Bound 1 applied to trees) function balances explore vs exploit.
 	                    //Because we want to change things the constant is configurable.
 	                    double exploreRating = exploreWeight * Math.Sqrt((2* Math.Log(initialState.totGames + 1) / (games + 0.1)));
-
+                        //Total score is win score + explore socre
 	                    double totalScore = score+exploreRating;
-	                    //Again if the score is better updae
-	                    if (totalScore > bestScore){
-	                        bestScore = totalScore;
-	                        bestIndex = i;
-	                    }
+	                    //If the score is better update
+	                    if (!(totalScore > bestScore)) continue;
+	                    bestScore = totalScore;
+	                    bestIndex = i;
 	                }
-	                //And set the best child for the next iteration
+	                //Set the best child for the next iteration
 	                bestNode = bestNode.children[bestIndex];
 	            }
-	            //Then roll out that child.
+	            //Finally roll out this node.
 	            rollout(bestNode);
 	        }
 
-	        //Once we get to this point we have worked out the best move so just need to return it
+	        //Onces all the simulations have taken place we select the best move...
 	        int mostGames = -1;
 	        int bestMove = -1;
 	        //Loop through all childern
 	        for(int i = 0; i < initialState.children.Count; i++)
 	        {
-	            //find the one that was played the most (this is the best move)
+	            //Find the one that was played the most (this is the best move as we are selecting the robust child)
 	            int games = initialState.children[i].totGames;
 	            if(games >= mostGames)
 	            {
@@ -128,17 +130,20 @@ namespace Monte
 	                bestMove = i;
 	            }
 	        }
-	        //Console.WriteLine("MCTS Learnt: Number of Simulations = " + count);
+	        //Set that child to the next move
 	        next = initialState.children[bestMove];
+	        //And we are done
 	        done = true;
 	    }
 
         //Rollout function (plays random moves till it hits a termination)
         protected override void rollout(AIState rolloutStart)
         {
+            //If the rollout start is a terminal state
             int rolloutStartResult = rolloutStart.getWinner();
             if (rolloutStartResult >= 0)
             {
+                //Add a win is it is a win, or a loss is a loss or otherwise a draw
                 if(rolloutStartResult == rolloutStart.playerIndex) rolloutStart.addWin();
                 else if(rolloutStartResult == (rolloutStart.playerIndex+1)%2) rolloutStart.addLoss();
                 else rolloutStart.addDraw (drawScore);
@@ -147,32 +152,32 @@ namespace Monte
             //Get the children
             List<AIState> children = rolloutStart.generateChildren();
 
-            int count = 0;
-                while(!terminalStateFound)
+            int loopCount = 0;
+            while(!terminalStateFound)
             {
                 //Loop through till a terminal state is found
-                count++;
+                loopCount++;
                 //If max roll out is hit or no childern were generated
-                if (count >= maxRollout || children.Count == 0) {
+                if (loopCount >= maxRollout || children.Count == 0) {
                     //record a draw
                     rolloutStart.addDraw (drawScore);
                     return;
                 }
-
+                //Default is the end of the array (because that will be the best move in a sorted list)
                 int selectedChild = children.Count-1;
 
                 //epsilon greedy move selection.
                 if (randGen.NextDouble() < epsilon)
                 {
-                    //choose best move (which is pos 0 in the sorted list)
+                    //Sort the array (we have all ready selected the most move indx above
                     foreach(AIState child in children) if(child.stateScore == null)child.stateScore = model.evaluate(child);
                     children = AIState.mergeSort(children);
                 }
                 else
                 {
+                    //Just select a random move
                     selectedChild = randGen.Next(children.Count);
                 }
-
                 //and see if that node is terminal
                 int endResult = children[selectedChild].getWinner ();
                 if(endResult >= 0)
@@ -185,12 +190,9 @@ namespace Monte
                 } else {
                     //Otherwise select that nodes as the childern and continue
                     children = children [selectedChild].generateChildren();
-                    if (children.Count == 0) {
-                        break;
-                    }
                 }
             }
-            //This node is now expanded so set tree node to true
+            //Reset the children as these are not 'real' children but just ones for the roll out.
             foreach( AIState child in rolloutStart.children)
             {
                 child.treeNode = true;

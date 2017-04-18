@@ -164,6 +164,7 @@ namespace Monte
                 //NumbHiddenLayers coming from the Settings file used.
                 player0Network = new Network(lengthOfInput, numbHiddenLayers, 0);
                 player1Network = new Network(lengthOfInput, numbHiddenLayers, 1);
+                tempHiddenLayers = new double[numbHiddenLayers,lengthOfInput];
             }
 
             //For every episode
