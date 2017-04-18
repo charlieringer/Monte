@@ -8,9 +8,18 @@ namespace Monte
 	public class ModelBasedAgent : AIAgent
 	{
 	    //Model used to make choices
-		private readonly Model model;
+		public readonly Model model;
         //Constructor which takes a model as sets this model as it.
-		public ModelBasedAgent(Model _model){ model = _model; }
+	    public ModelBasedAgent(Model _model)
+	    {
+	        //In case the model is nu;;
+	        if (_model == null)
+	        {
+	            _model = new Model();
+	            Console.WriteLine("Monte Error: Supplied model is null when creating ModelBasedAgent. Empty model used.");
+	        }
+	        model = _model;
+	    }
 
 	    protected override void mainAlgorithm(AIState initialState)
 		{

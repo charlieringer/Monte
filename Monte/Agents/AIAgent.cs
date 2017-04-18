@@ -23,6 +23,13 @@ namespace Monte
 	    //Kicks off the the main algortims on a sperate thread
 		public void run(AIState initalState)
 		{
+		    //Safety check for a null initalstate
+		    if (initalState == null)
+		    {
+		        Console.WriteLine("Monte: Error: Inital state for AI is null");
+		        started = true;
+		        done = true;
+		    }
 			//Make a new AI thread with this state
 		    aiTask = new Thread (() => mainAlgorithm(initalState));
 		    bool aiHasStarted = false;

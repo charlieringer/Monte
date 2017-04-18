@@ -42,7 +42,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AgentTests.cs" />
+    <Compile Include="MCTSSimpleAgentTests.cs" />
+    <Compile Include="MCTSWithLearningTests.cs" />
+    <Compile Include="MCTSWithPruningTests.cs" />
+    <Compile Include="MCTSWithSoftPruningTests.cs" />
+    <Compile Include="ModelBasedAgentTests.cs" />
+    <Compile Include="RandomAgentTests.cs" />
     <Compile Include="AIStateTests.cs" />
     <Compile Include="ModelTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
