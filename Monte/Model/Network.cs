@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Monte
 {
-    public class Network
+    internal class Network
     {
         //2d Vector where each row corresponds to a hidden layer and each column to a node in that layer.
         public double[,] biasH;

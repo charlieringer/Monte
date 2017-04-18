@@ -141,13 +141,19 @@ namespace Monte
         }
 
         //Training is done in a series of episodes where a number of games are played per episode
-        public void train(int gamesPerEpisode, int episodes, StateCreator sc)
+        public int train(int gamesPerEpisode, int episodes, StateCreator sc)
         {
+            //If there are not games to play...
+            if (gamesPerEpisode < 1 || episodes < 1)
+            {
+                Console.WriteLine("Monte Error: Games per episode or Episodes is < 1, terminating.");
+                return -1;
+            }
             //If the state creator is null then we cannot train
             if (sc == null)
             {
                 Console.WriteLine("Monte Error: State Creator is null, terminating.");
-                return;
+                return -1;
             }
             //If we have not set the length of input it means we currently know nothing about the game
             //So to start off we get a state from our state creator and see how long it is
@@ -157,7 +163,8 @@ namespace Monte
                 AIState state = sc();
                 if (!validateAIState(state))
                 {
-                    return;
+                    Console.WriteLine("Monte Error: State failed validation, terminating.");
+                    return -1;
                 }
                 //Length of the input is the length of a preprocessed empty state.
                 lengthOfInput = preprocess(sc()).Length;
@@ -187,6 +194,7 @@ namespace Monte
             player0Network.writeToFile(writer);
             player1Network.writeToFile(writer);
             writer.Close();
+            return 1;
         }
 
         private double trainingEpisode(StateCreator stateCreator, int numbItters)
@@ -521,8 +529,8 @@ namespace Monte
             return false;
         }
         //Sigmoid function (used as output activation function)
-        private static double sig(double x){ return 1.0/(1.0+Math.Exp(-x)); }
+        public static double sig(double x){ return 1.0/(1.0+Math.Exp(-x)); }
         //tanH function (used as hidden layer activation function)
-        private static double tanH(double x) { return 2.0/(1.0+Math.Exp(-x*2))-1; }
+        public static double tanH(double x) { return 2.0/(1.0+Math.Exp(-x*2))-1; }
     }
 }
