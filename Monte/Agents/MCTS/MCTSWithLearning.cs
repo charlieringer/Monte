@@ -16,19 +16,19 @@ namespace Monte
 	    public MCTSWithLearning (int _numbSimulations, double _exploreWeight, int _maxRollout, Model _model, double _epsilon, double _drawScore)
 	        : base( _numbSimulations, _exploreWeight, _maxRollout, _drawScore)
 	    {
-	        model = _model == null ? new Model() : model;
+	        model = _model == null ? new Model() : _model;
 	        epsilon = _epsilon;
 	    }
 
 	    public MCTSWithLearning(Model _model)
 	    {
-	        model = _model == null ? new Model() : model;
+	        model = _model == null ? new Model() : _model;
 	        parseXML("Assets/Monte/DeafaultSettings.xml");
 	    }
 
 	    public MCTSWithLearning (Model _model, String settingsFile) : base (settingsFile)
 	    {
-	        model = _model == null ? new Model() : model;
+	        model = (_model == null) ? new Model() : _model;
 	        parseXML(settingsFile);
 	    }
 

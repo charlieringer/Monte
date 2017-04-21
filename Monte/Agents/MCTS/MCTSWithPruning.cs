@@ -14,21 +14,21 @@ namespace Monte
 
 	    public MCTSWithPruning(Model _model)
 	    {
-	        model = _model == null ? new Model() : model;
+	        model = _model == null ? new Model() : _model;
 	        parseXML("Assets/Monte/DeafaultSettings.xml");
 	    }
 
 		public MCTSWithPruning (int _numbSimulations, double _exploreWeight, int _maxRollout, Model _model, double _pruningFactor, int _stopPruneAt, double _drawScore)
 			: base( _numbSimulations, _exploreWeight, _maxRollout, _drawScore)
 		{
-		    model = _model == null ? new Model() : model;
+		    model = _model == null ? new Model() : _model;
 			pruningFactor = _pruningFactor;
 		    stopPruningAt = _stopPruneAt;
 		}
 
 		public MCTSWithPruning (Model _model, String settingsFile) : base (settingsFile)
 		{
-		    model = _model == null ? new Model() : model;
+		    model = _model == null ? new Model() : _model;
 		    parseXML(settingsFile);
 		}
 

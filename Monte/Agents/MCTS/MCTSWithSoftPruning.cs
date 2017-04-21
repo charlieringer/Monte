@@ -14,20 +14,20 @@ namespace Monte
 
         public MCTSWithSoftPruning(Model _model)
         {
-            model = _model == null ? new Model() : model;
+            model = _model == null ? new Model() : _model;
             parseXML("Assets/Monte/DeafaultSettings.xml");
         }
 
         public MCTSWithSoftPruning (int _numbSimulations, double _exploreWeight, int _maxRollout, Model _model, double _softPruneWeight, double _drawScore)
             : base( _numbSimulations, _exploreWeight, _maxRollout, _drawScore)
         {
-            model = _model == null ? new Model() : model;
+            model = _model == null ? new Model() : _model;
             softPruneWeight = _softPruneWeight;
         }
 
         public MCTSWithSoftPruning (Model _model, String settingsFile) : base (settingsFile)
         {
-            model = _model == null ? new Model() : model;
+            model = _model == null ? new Model() : _model;
             parseXML(settingsFile);
         }
 
