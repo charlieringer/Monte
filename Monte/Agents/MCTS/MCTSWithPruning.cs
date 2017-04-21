@@ -8,21 +8,27 @@ namespace Monte
     //bad nodes entirely from consideration and therefore allowing more consideration for the good nodes
 	public class MCTSWithPruning : MCTSMasterAgent
 	{
-		private readonly Model model;
+		public readonly Model model;
 		private double pruningFactor;
 	    private int stopPruningAt;
+
+	    public MCTSWithPruning(Model _model)
+	    {
+	        model = _model == null ? new Model() : model;
+	        parseXML("Assets/Monte/DeafaultSettings.xml");
+	    }
 
 		public MCTSWithPruning (int _numbSimulations, double _exploreWeight, int _maxRollout, Model _model, double _pruningFactor, int _stopPruneAt, double _drawScore)
 			: base( _numbSimulations, _exploreWeight, _maxRollout, _drawScore)
 		{
-			model = _model;
+		    model = _model == null ? new Model() : model;
 			pruningFactor = _pruningFactor;
 		    stopPruningAt = _stopPruneAt;
 		}
 
 		public MCTSWithPruning (Model _model, String settingsFile) : base (settingsFile)
 		{
-			model = _model;
+		    model = _model == null ? new Model() : model;
 		    parseXML(settingsFile);
 		}
 

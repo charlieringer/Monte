@@ -7,7 +7,7 @@ namespace Monte
 	public class MCTSWithLearning : MCTSMasterAgent
 	{
 	    //Model used during rollouts
-		private readonly Model model;
+		public readonly Model model;
 	    //epsilon value used in rollout
 	    private double epsilon;
 
@@ -16,19 +16,25 @@ namespace Monte
 	    public MCTSWithLearning (int _numbSimulations, double _exploreWeight, int _maxRollout, Model _model, double _epsilon, double _drawScore)
 	        : base( _numbSimulations, _exploreWeight, _maxRollout, _drawScore)
 	    {
-	        model = _model;
+	        model = _model == null ? new Model() : model;
 	        epsilon = _epsilon;
+	    }
+
+	    public MCTSWithLearning(Model _model)
+	    {
+	        model = _model == null ? new Model() : model;
+	        parseXML("Assets/Monte/DeafaultSettings.xml");
 	    }
 
 	    public MCTSWithLearning (Model _model, String settingsFile) : base (settingsFile)
 	    {
-	        model = _model;
+	        model = _model == null ? new Model() : model;
 	        parseXML(settingsFile);
 	    }
 
 	    void parseXML(String settingsFile)
 	    {
-            //Tryi to parse the file
+            //Try to parse the file
 	        try
 	        {
 	            XmlDocument settings = new XmlDocument();

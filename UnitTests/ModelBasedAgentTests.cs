@@ -66,6 +66,5 @@ namespace UnitTests
             AIState next = mbAgent.next;
             Assert.True(next != null);
         }
-
     }
 }

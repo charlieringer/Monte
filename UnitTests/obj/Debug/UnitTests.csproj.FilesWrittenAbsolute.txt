@@ -6,3 +6,4 @@
 /Users/Charlie/Google Drive/_Year3/Final Year Project/Coding/ComputingProject/UnitTests/bin/Debug/nunit.framework.dll
 /Users/Charlie/Google Drive/_Year3/Final Year Project/Coding/ComputingProject/UnitTests/bin/Debug/Monte.dll
 /Users/Charlie/Google Drive/_Year3/Final Year Project/Coding/ComputingProject/UnitTests/bin/Debug/Monte.dll.mdb
+/Users/Charlie/Google Drive/_Year3/Final Year Project/Coding/ComputingProject/UnitTests/bin/Debug/Monte.pdb

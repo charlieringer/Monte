@@ -9,19 +9,25 @@ namespace Monte
     //However this allows the bad move to be explored should the situation become suitably dire.
     public class MCTSWithSoftPruning : MCTSMasterAgent
     {
-        private readonly Model model;
+        public readonly Model model;
         private double softPruneWeight;
+
+        public MCTSWithSoftPruning(Model _model)
+        {
+            model = _model == null ? new Model() : model;
+            parseXML("Assets/Monte/DeafaultSettings.xml");
+        }
 
         public MCTSWithSoftPruning (int _numbSimulations, double _exploreWeight, int _maxRollout, Model _model, double _softPruneWeight, double _drawScore)
             : base( _numbSimulations, _exploreWeight, _maxRollout, _drawScore)
         {
-            model = _model;
+            model = _model == null ? new Model() : model;
             softPruneWeight = _softPruneWeight;
         }
 
         public MCTSWithSoftPruning (Model _model, String settingsFile) : base (settingsFile)
         {
-            model = _model;
+            model = _model == null ? new Model() : model;
             parseXML(settingsFile);
         }
 
