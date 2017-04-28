@@ -12,9 +12,9 @@
 		SoftPruneWeight="0.25">	
 	</PruningSettings>
 
-	<RolloutSettins
+	<RolloutSettings
 		Epsilon="0.2">
-	</RolloutSettins>
+	</RolloutSettings>
 	
 	<DeepLearningSettings 
 		Alpha="0.01" 

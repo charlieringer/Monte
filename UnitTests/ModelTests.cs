@@ -6,7 +6,6 @@ namespace UnitTests
     [TestFixture]
     public class ModelTests
     {
-
         [Test]
         public void TestModel_Init_Blank()
         {

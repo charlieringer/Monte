@@ -54,7 +54,6 @@ namespace UnitTests
             AIState next = agent.next;
             Assert.True(next == null);
         }
-
         [Test]
         public void MCTSWithSoftPruningTests_Run_Children()
         {

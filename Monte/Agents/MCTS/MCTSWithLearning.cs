@@ -39,7 +39,7 @@ namespace Monte
 	        {
 	            XmlDocument settings = new XmlDocument();
 	            settings.Load(settingsFile);
-	            XmlNode node = settings.SelectSingleNode("descendant::RolloutSettins");
+	            XmlNode node = settings.SelectSingleNode("descendant::RolloutSettings");
 	            epsilon = Double.Parse(node.Attributes.GetNamedItem("Epsilon").Value);
 	        }
 	        //It it fails

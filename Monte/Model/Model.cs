@@ -391,19 +391,26 @@ namespace Monte
         //Evaluate
         public double evaluate(AIState state)
         {
+            //eIf the network is empty just return 0
+            if (player0Network == null || player0Network.wH == null) return 0;
             //Preprocess the state
             int[] processedBoard = preprocess(state);
             //Set the tempHiddenLayers to the result of this state
-            setHiddenLayers(processedBoard, state.playerIndex, tempHiddenLayers);
+            setHiddenLayers(processedBoard, state.playerIndex);
             //Get the output and return it.
-            return getOutput(tempHiddenLayers, state.playerIndex);;
+            return getOutput(state.playerIndex);
         }
 
         //Set the temp hidden layers to the output of the Network
-        private void setHiddenLayers(int[] stateBoard, int playerIndx, double[,] hiddenLayers)
+        private void setHiddenLayers(int[] stateBoard, int playerIndx)
         {
             //Work out which network we are using
             Network thisPlayer = (playerIndx == 0) ? player0Network : player1Network;
+            if (thisPlayer.wH.Length == 0)
+            {
+                Console.WriteLine("Monte: Error, Network was not created correctly and has no weights.");
+                return;
+            }
             //Loop through all of the inputs
             for (int j = 0; j < lengthOfInput; j++)
             {
@@ -418,7 +425,7 @@ namespace Monte
                 //Add the bias
                 thisElement += thisPlayer.biasH[0,j];
                 //And set the first layer of inputs the tanH(total)
-                hiddenLayers[0,j] = tanH(thisElement);
+                tempHiddenLayers[0,j] = tanH(thisElement);
             }
 
             //Then work out the hidden neuron for all of the other hidden layers
@@ -426,7 +433,7 @@ namespace Monte
             {
                 for (int j = 0; j < lengthOfInput; j++)
                 {
-                    hiddenLayers[i,j] = getHiddenNeuron(i,j, hiddenLayers, thisPlayer);
+                    tempHiddenLayers[i,j] = getHiddenNeuron(i,j, tempHiddenLayers, thisPlayer);
                 }
             }
         }
@@ -481,7 +488,7 @@ namespace Monte
         }
 
         //Gets the output
-        private double getOutput(double[,] hiddenLayer, int playerIndx)
+        private double getOutput(int playerIndx)
         {
             //Get the correct network
             Network thisPlayer = (playerIndx == 0) ? player0Network : player1Network;
@@ -491,7 +498,7 @@ namespace Monte
             for (int i = 0; i < lengthOfInput; i++)
             {
                 //And multiple thier values with the weight
-                returnValue += hiddenLayer[numbHiddenLayers - 1, i] * thisPlayer.wOut[i];
+                returnValue += tempHiddenLayers[numbHiddenLayers - 1, i] * thisPlayer.wOut[i];
             }
             //Add the bias
             returnValue += thisPlayer.biasOut;
