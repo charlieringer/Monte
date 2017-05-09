@@ -49,16 +49,18 @@ namespace Monte
             //And bias weights
             biasH = new double[_numbHiddenLayers,_lengthOfInput];
             biasOut = 0.0;
+            //set the max values for the weight d
+            double weightBound = 1 / Math.Sqrt(_lengthOfInput);
             //Loop through all of these newly allocated weights
             for(int i = 0; i < _numbHiddenLayers; i++)
             {
                 //And init the next weight (between -1/sqrt{inputlength} and 1/sqrt{inputlength}
-                for (int j = 0; j < _lengthOfInput * _lengthOfInput; j++) wH[i, j] = getNextWeight(-1 / Math.Sqrt(_lengthOfInput), 1 / Math.Sqrt(_lengthOfInput));
-                for (int j = 0; j < _lengthOfInput; j++){ biasH[i,j] = getNextWeight(-1 / Math.Sqrt(_lengthOfInput), 1 / Math.Sqrt(_lengthOfInput));}
+                for (int j = 0; j < _lengthOfInput * _lengthOfInput; j++) wH[i, j] = getNextWeight(-weightBound, weightBound);
+                for (int j = 0; j < _lengthOfInput; j++){ biasH[i,j] = getNextWeight(-weightBound, weightBound);}
             }
             //Init the weights for the output layer as well.
-            for (int i = 0; i < _lengthOfInput; i++){ wOut[i] = getNextWeight(-1 / Math.Sqrt(_lengthOfInput), 1 / Math.Sqrt(_lengthOfInput));}
-            biasOut = getNextWeight(-1 / Math.Sqrt(_lengthOfInput), 1 / Math.Sqrt(_lengthOfInput));
+            for (int i = 0; i < _lengthOfInput; i++){ wOut[i] = getNextWeight(-weightBound, weightBound);}
+            biasOut = getNextWeight(-weightBound, weightBound);
         }
 
         //Gets a weight from a uniform distribution between two bounds

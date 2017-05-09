@@ -150,6 +150,7 @@ namespace Monte
 	            if(rolloutStartResult == rolloutStart.playerIndex) rolloutStart.addWin();
 	            else if(rolloutStartResult == (rolloutStart.playerIndex+1)%2) rolloutStart.addLoss();
 	            else rolloutStart.addDraw (drawScore);
+	            return;
 	        }
 	        bool terminalStateFound = false;
 	        //Get the children
@@ -164,7 +165,7 @@ namespace Monte
 	            if (loopCount >= maxRollout || children.Count == 0) {
 	                //Record a draw
 	                rolloutStart.addDraw (drawScore);
-	                return;
+	                break;
 	            }
 	            //Get a random child index
 	            int index = randGen.Next(children.Count);
@@ -173,8 +174,9 @@ namespace Monte
 	            if(endResult >= 0)
 	            {
 	                terminalStateFound = true;
+	                if (endResult == 2) rolloutStart.addDraw(drawScore);
 	                //If it is a win add a win
-	                if(endResult == rolloutStart.playerIndex) rolloutStart.addWin();
+	                else if(endResult == rolloutStart.playerIndex) rolloutStart.addWin();
 	                //Else add a loss
 	                else rolloutStart.addLoss();
 	            } else {
