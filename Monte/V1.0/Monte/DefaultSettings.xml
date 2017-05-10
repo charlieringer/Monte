@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Settings>
+	<MCTSSettings 
+		Itterations="500" 
+		ExploreWeight="1.45" 
+		MaxRollout="64" 
+		DrawScore="0.5">
+	</MCTSSettings>
+
+	<PruningSettings 
+		PruneWorsePercent="0.33"
+		SoftPruneWeight="0.25">	
+	</PruningSettings>
+
+	<RolloutSettings
+		Epsilon="0.2">
+	</RolloutSettings>
+	
+	<DeepLearningSettings 
+		Alpha="0.01" 
+		MaxForwardItters="64" 
+		NumbHiddenLayers="3" 
+		Normalisation="0.05" 
+		ConfidenceThreshold="0.8"
+		DrawScore="0.5">
+	</DeepLearningSettings>
+</Settings>
