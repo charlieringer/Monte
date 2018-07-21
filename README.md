@@ -1,6 +1,5 @@
 # Monte
-# A Final Year BSc Computer Science Project by Charlie Ringer
-Monte is a final year project CS project. Monte is designed to play 2-player abstract games (think Chess or Go) and is designed to offer Unity developers simple to use MCTS Agent that they can used in their games. Monte also features a Reinforcement Learning model where developers can train a model to learn what a good state is and then this can be used by the MCTS to improve its performance.
+Monte is designed to play 2-player abstract games (think Chess or Go) and is designed to offer Unity developers simple to use MCTS Agent that they can used in their games. Monte also features a Reinforcement Learning model where developers can train a model to learn what a good state is and then this can be used by the MCTS to improve its performance.
 
 # Wiki
 Monte has a wiki at https://github.com/cring002/Monte/wiki
